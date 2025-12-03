@@ -1,8 +1,9 @@
-# install.packages(c("sf", "ggplot2"))  # if needed
+# install.packages(c("sf", "ggplot2", "ggspatial"))  # if needed
 
 library(sf)
 library(ggplot2)
 library(tidyverse)
+library(ggspatial)
 
 # 1) Set the URL to the layer (1 = "Catch Record Card Area")
 base_url <- "https://geodataservices.wdfw.wa.gov/arcgis/rest/services/FP_Projects/CatchRecordCardArea/MapServer"
@@ -29,7 +30,7 @@ ggplot(crc) +
   geom_sf_text(aes(label=CatchRecordCode),size=2)+
   theme_minimal() +
   labs(
-    title = "Catch Record Card Areas",
+    title = "Washington Catch Record Card Areas",
     x="long",
     y="lat"
   )
@@ -37,8 +38,6 @@ ggplot(crc) +
 crc%>%
   distinct(CatchRecordCode)%>%
   arrange(CatchRecordCode)
-
-
 
 # 4) Simple static map with ggplot2
 crc_ll <- st_transform(crc, 4326)
@@ -63,3 +62,44 @@ ggplot(crc_ll) +
     x="long",
     title = "Catch Record Card Areas"
   )
+
+# 5) read in .csv with CRCs with creel from MS Forms survey
+
+crc_creel <- read_csv("crc_areas_creeled.csv") |> 
+  mutate(catch_area_code = as.character(catch_area_code)) |> 
+  distinct(data_source, catch_area_code) |> # collapse rows to distinct CRCs with either salmon or steelhead creel in 2023-24
+  rename(CatchRecordCode = catch_area_code)
+
+# 6) join CRCs with creel to spatial CRC layer
+
+crc <- crc |> 
+  left_join(crc_creel, by = "CatchRecordCode") |> 
+  rename(Coverage = data_source) |> 
+  mutate(Coverage = replace_na(Coverage, "No creel"))
+
+# 7) plot again with creel mapping - WITH SATELLITE BASE LAYER
+# Try different tile types - these are more reliable
+
+crc_creel_map <- ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 1, progress = "none") +
+  geom_sf(data = crc, aes(fill = Coverage), alpha = 0.65, color = "gray20", size = 0.3) +
+  coord_sf(xlim = c(600000, 2550000), ylim = c(80000, 1350000), crs = 2927) +
+  theme_minimal() +
+  theme(
+    plot.caption = element_text(hjust = 0, size = 8)
+  ) +
+  labs(
+    title = "Washington Catch Record Card Areas and Creel Coverage",
+    x = "long",
+    y = "lat",
+    caption = str_wrap("Assessment of Catch Record Card Areas with creel coverage based on survey of WDFW salmon and 
+    steelhead creel programs for the 2023-24 fishing year. This map is not exhaustive of all creel surveys conducted 
+    statewide. Basemap source: OpenStreetMap contributors, CARTO.", width = 80)
+  )
+
+crc_creel_map
+
+# 8) export map 
+
+ggsave("crc_coverage_map.png", crc_creel_map, width = 10, height = 8, dpi = 800)
+
