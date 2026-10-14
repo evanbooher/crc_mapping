@@ -105,7 +105,7 @@ def read_grid(title):
 
 season = read_summary()
 n_long = read_grid("eCRC interviews by area and month").rename(columns={"value": "n"})
-fish_long = read_grid("% of fish reported via eCRC").rename(columns={"value": "pct_fish"})
+fish_long = read_grid("% of fish via eCRC").rename(columns={"value": "pct_fish"})
 ref_long = read_grid("% anglers refused scan").rename(columns={"value": "pct_refused"})
 monthly = n_long.merge(fish_long, on=["code", "month"]).merge(ref_long, on=["code", "month"])
 
@@ -162,10 +162,11 @@ def class_legend(ax_or_fig, breaks, ramp, fmt, title, low=True, loc="lower left"
                             fontsize=8, title_fontsize=9, alignment="left", **kw)
 
 pct = lambda v: f"{v*100:.0f}%"
-FISH_BREAKS = [0, .05, .10, .15, .20, 1]
+FISH_BREAKS = [0, .15, .20, .25, .30, 1]
 REF_BREAKS = [0, .05, .10, .20, .30, 1]
 NOTE = ("Source: PSSP 2026 creel interviews with harvest, Areas 5–13; data as of Oct 9, 2026. "
         "Area 7 excludes waters west of the San Juan Islands not sampled.")
+EST_NOTE = "  eCRC fish estimated as total fish × eCRC licenses ÷ (paper + eCRC licenses), by area."
 NOTE = "Source: PSSP 2026 creel interviews with harvest, Marine Areas 5–13 (data as of Oct 9, 2026)."
 
 def finish(fig, name, title, subtitle, note=NOTE):
@@ -183,10 +184,10 @@ n_season = s["eCRC interviews"]
 # ---------- 1. season: % fish via eCRC ----------
 fig, ax = plt.subplots(figsize=(10, 7.5)); fig.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.05)
 draw_choropleth(ax, s["% fish via eCRC"], n_season, FISH_BREAKS, BLUE)
-class_legend(ax, FISH_BREAKS, BLUE, pct, "% of fish reported via eCRC", low=False, loc="upper left")
-finish(fig, "01_season_pct_fish_ecrc.png", "Share of harvested fish reported via eCRC",
+class_legend(ax, FISH_BREAKS, BLUE, pct, "% of fish via eCRC (est.)", low=False, loc="upper left")
+finish(fig, "01_season_pct_fish_ecrc.png", "Share of harvested fish via eCRC (estimated)",
        f"Season to date, by marine catch area. Overall: {season['eCRC fish'].sum()/season['Total fish'].sum():.0%} "
-       f"of {season['Total fish'].sum():,} fish sampled.")
+       f"of {season['Total fish'].sum():,} fish sampled.", NOTE + EST_NOTE)
 
 # ---------- 2. season: % anglers refused scan ----------
 fig, ax = plt.subplots(figsize=(10, 7.5)); fig.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.05)
@@ -230,10 +231,10 @@ def facet(metric, breaks, ramp, legend_title, name, title, subtitle):
     lax = axes.flat[-1]; lax.set_axis_off()
     class_legend(lax, breaks, ramp, pct, legend_title, loc="center left")
     finish(fig, name, title, subtitle,
-           NOTE + "  *October partial (through Oct 7). n = eCRC interviews in month.")
+           NOTE + "  *Oct partial (through Oct 7). n = eCRC interviews." + (EST_NOTE if metric == "pct_fish" else ""))
 
-facet("pct_fish", FISH_BREAKS, BLUE, "% of fish via eCRC", "04_monthly_map_pct_fish_ecrc.png",
-      "Share of fish reported via eCRC, by month",
+facet("pct_fish", FISH_BREAKS, BLUE, "% of fish via eCRC (est.)", "04_monthly_map_pct_fish_ecrc.png",
+      "Share of fish via eCRC (estimated), by month",
       "Most areas enter the sample in July; hatched cells rest on fewer than 10 eCRC interviews.")
 facet("pct_refused", REF_BREAKS, ORANGE, "% of eCRC anglers refusing", "05_monthly_map_refusal.png",
       "Scan refusal rate, by month",
@@ -243,7 +244,7 @@ facet("pct_refused", REF_BREAKS, ORANGE, "% of eCRC anglers refusing", "05_month
 am = all_months.copy()
 am["m"] = am["Month"].map(MON_LABEL)
 fig, ax = plt.subplots(figsize=(10, 5.6)); fig.subplots_adjust(left=0.08, right=0.97, top=0.84, bottom=0.14)
-for key, col, lab in [("fish", "% fish via eCRC", "% of fish via eCRC"),
+for key, col, lab in [("fish", "% fish via eCRC (est.)", "% of fish via eCRC (est.)"),
                       ("refusal", "% anglers refused", "% of eCRC anglers refusing scan")]:
     y = am[col].astype(float).values
     ax.plot(am["m"], y, color=SERIES[key], lw=2, marker="o", ms=7, mec=SURFACE, mew=2, label=lab)
@@ -255,8 +256,8 @@ for sp in ["top", "right", "left"]: ax.spines[sp].set_visible(False)
 ax.tick_params(axis="x", pad=16, length=0); ax.tick_params(axis="y", length=0)
 ax.legend(loc="upper right", frameon=False, fontsize=9)
 finish(fig, "06_monthly_lines_all_areas.png", "eCRC metrics by month, all areas combined",
-       "Scan refusals fell from 36% of eCRC anglers in April to 7% in September; share of fish via eCRC held at 11-13% from July on.",
-       NOTE + "  October partial (through Oct 7). n = eCRC interviews.")
+       "Scan refusals fell from 36% of eCRC anglers in April to 7% in September; estimated share of fish via eCRC held at 26-29% from July to September.",
+       NOTE + "  Oct partial. n = eCRC interviews." + EST_NOTE)
 
 # ---------- 7. monthly lines, small multiples by area ----------
 fig, axes = plt.subplots(2, 5, figsize=(13.33, 6.6), sharex=True, sharey=True)
@@ -277,10 +278,10 @@ for ax, code in zip(axes.flat, AREAS):
 ax.set_xticks(x, [MON_LABEL[m][0] if m != "2026-10" else "O*" for m in MONTHS])
 axes.flat[0].yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1, decimals=0))
 axes.flat[0].set_ylim(0, 0.55)
-h = [Line2D([], [], color=SERIES["fish"], lw=2, marker="o", mec=SURFACE, label="% of fish via eCRC"),
+h = [Line2D([], [], color=SERIES["fish"], lw=2, marker="o", mec=SURFACE, label="% of fish via eCRC (est.)"),
      Line2D([], [], color=SERIES["refusal"], lw=2, marker="o", mec=SURFACE, label="% of eCRC anglers refusing scan"),
      Line2D([], [], ls="", marker="o", mfc=SURFACE, mec=INK2, label=f"< {LOW_N} eCRC interviews (not connected)")]
 fig.legend(handles=h, loc="upper left", bbox_to_anchor=(0.03, 0.905), ncol=3, frameon=False, fontsize=9)
 finish(fig, "07_monthly_lines_by_area.png", "eCRC metrics by month and catch area",
        "",
-       NOTE + "  Months Apr–Oct; October partial. n in titles = season eCRC interviews.")
+       NOTE + "  Oct partial. n = season eCRC interviews." + EST_NOTE)
