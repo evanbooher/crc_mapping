@@ -30,6 +30,7 @@ SUMMARY_XLSX, MONTH_XLSX = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
 OUT_DIR = pathlib.Path(sys.argv[3]); OUT_DIR.mkdir(parents=True, exist_ok=True)
 SLIDE = "--slide" in sys.argv
 
+NI = r"$\it{n}$"                  # italic n for sample-size labels
 LOW_N = 10                      # eCRC interviews below this are flagged
 F = "FreeSans"                  # Arial/Helvetica-metric sans
 INK = "#111111"
@@ -41,7 +42,8 @@ DATA_NOTE = "Data: PSSP creel interviews, Apr 1–Oct 7, 2026 (October partial).
 MAP_NOTE = " Map: WDFW Catch Record Card areas; imagery: Esri World Imagery."
 EST_NOTE = " eCRC fish estimated as total fish × eCRC licenses ÷ (paper + eCRC licenses), by area."
 
-mpl.rcParams.update({"font.family": F, "font.size": 10, "text.color": INK,
+mpl.rcParams.update({"mathtext.fontset": "custom", "mathtext.rm": F, "mathtext.it": F + ":italic",
+                     "mathtext.bf": F + ":bold", "font.family": F, "font.size": 10, "text.color": INK,
                      "axes.labelcolor": INK, "xtick.color": INK, "ytick.color": INK})
 
 # ---------------- geometry ----------------
@@ -242,13 +244,14 @@ for c in AREAS:
     x, y = anchor(c)
     ax.scatter(x, y, s=SMAX * n[c] / n.max(), color="#2c7fb8", edgecolor="#08306b", linewidth=0.8, alpha=0.9, zorder=4)
     off = np.sqrt(SMAX * n[c] / n.max()) / 2 + 3
-    ax.annotate(f"{LABEL.get(c, c)}\n{n[c]:,}", (x, y), xytext=(0, -off), textcoords="offset points", ha="center",
-                va="top", fontsize=9, fontweight="bold", linespacing=1.0, zorder=7,
-                path_effects=[pe.withStroke(linewidth=2.5, foreground="white")])
+    for txt, dy, wt, fs in [(LABEL.get(c, c), 0, "bold", 9), (f"({NI} = {n[c]:,})", 11, "normal", 8.5)]:
+        ax.annotate(txt, (x, y), xytext=(0, -off - dy), textcoords="offset points", ha="center", va="top",
+                    fontsize=fs, fontweight=wt, zorder=7, path_effects=[pe.withStroke(linewidth=2.5, foreground="white")])
 latlong_axes(ax); north_arrow(ax); scale_bar(ax); inset(ax)
 h = [Line2D([], [], marker="o", ls="", color="#2c7fb8", mec="#08306b", markersize=np.sqrt(SMAX * r / n.max()),
             label=f"{r:,}") for r in [100, 500, 1500]]
-boxed_legend(ax, h, "eCRC interviews", labelspacing=2.2, handletextpad=2.0, borderpad=1.0)
+boxed_legend(ax, h, "eCRC interviews", ncol=3, columnspacing=2.2, handletextpad=1.6, borderpad=1.4,
+             handleheight=3.2)
 finish(fig, ax, "03_season_ecrc_sample_size.png",
        "Creel interviews with eCRC harvest by catch area, Marine Areas 5–13, 2026", DATA_NOTE + MAP_NOTE)
 
@@ -264,10 +267,10 @@ def facet(metric, breaks, ramp, legend_title, name, title, note):
             ax.text(x, y, LABEL.get(c, c), ha="center", va="center", fontsize=6.5, fontweight="bold", zorder=7,
                     path_effects=[pe.withStroke(linewidth=1.8, foreground="white")])
         no_axes(ax)
-        ax.set_title(f"{MON[m]} (n = {int(sub['n'].sum()):,})", fontsize=10, loc="left", pad=3)
+        ax.set_title(f"{MON[m]} ({NI} = {int(sub['n'].sum()):,})", fontsize=10, loc="left", pad=3)
     lax = axes.flat[-1]; lax.set_axis_off()
     boxed_legend(lax, class_handles(breaks, ramp, low=True, nodata=True), legend_title, loc="center left")
-    finish(fig, None, name, title, note + " n = eCRC interviews in month. *October partial.")
+    finish(fig, None, name, title, note + " " + NI + " = eCRC interviews in month. *October partial.")
 
 facet("pct_fish", FISH_BREAKS, YLGN, "Percent of fish\n(eCRC, estimated)", "04_monthly_map_pct_fish_ecrc.png",
       "Estimated percent of harvested fish reported by eCRC by month, Marine Areas 5–13, 2026",
@@ -301,21 +304,21 @@ SERIES = [("pct_fish", "Percent of fish via eCRC (est.)", FISH_COL, "% fish via 
           ("pct_refused", "Percent of eCRC anglers refusing scan", REF_COL, "% anglers refused")]
 pct = mpl.ticker.PercentFormatter(1, decimals=0)
 
-for theme in ("bw", "classic"):
+for theme in ("bw",):
     # 6. all areas
     fig, ax = plt.subplots(figsize=(9, 5))
     x = np.arange(len(all_months))
     for key, lab, col, src in SERIES:
         ax.plot(x, all_months[src].astype(float), color=col, lw=1.2, marker="o", ms=5, label=lab)
-    ax.set_xticks(x, [f"{MON[m]}\n(n = {int(v):,})" for m, v in zip(all_months["Month"], all_months["eCRC interviews"])])
+    ax.set_xticks(x, [f"{MON[m]}\n({NI} = {int(v):,})" for m, v in zip(all_months["Month"], all_months["eCRC interviews"])])
     ax.yaxis.set_major_formatter(pct); ax.set_ylim(0, 0.4)
     ax.set_xlabel("Month"); ax.set_ylabel("Percent")
     gg_theme(ax, theme)
     ax.legend(title="Metric", loc="center left", bbox_to_anchor=(1.01, 0.5), frameon=False, fontsize=9, title_fontsize=9.5,
               alignment="left")
-    finish(fig, ax, f"06_monthly_lines_all_areas_{theme}.png",
+    finish(fig, ax, "06_monthly_lines_all_areas.png",
            "Monthly eCRC metrics, all Marine Areas 5–13 combined, 2026",
-           DATA_NOTE + EST_NOTE + " n = eCRC interviews.")
+           DATA_NOTE + EST_NOTE + " " + NI + " = eCRC interviews.")
 
     # 7. by area
     fig, axes = plt.subplots(2, 5, figsize=(13.33, 6.4), sharex=True, sharey=True)
@@ -328,7 +331,7 @@ for theme in ("bw", "classic"):
             ax.plot(xm, sub[key].where(ok), color=col, lw=1.2, marker="o", ms=4)
             ax.plot(xm, sub[key].where(~ok & sub[key].notna()), ls="", marker="o", ms=4, mfc="white", mec=col, mew=1)
         gg_theme(ax, theme)
-        strip(ax, f"Area {LABEL.get(c, c)} (n = {int(s.loc[c, 'eCRC interviews']):,})", theme)
+        strip(ax, f"Area {LABEL.get(c, c)} ({NI} = {int(s.loc[c, 'eCRC interviews']):,})", theme)
     axes.flat[0].yaxis.set_major_formatter(pct); axes.flat[0].set_ylim(-0.02, 0.55)
     for ax in axes[1]:
         ax.set_xticks(xm, [MON[m][0] if m != "2026-10" else "O*" for m in MONTHS])
@@ -337,6 +340,6 @@ for theme in ("bw", "classic"):
     h.append(Line2D([], [], ls="", marker="o", ms=5, mfc="white", mec="#4d4d4d", label=f"< {LOW_N} eCRC interviews"))
     fig.legend(handles=h, title="Metric", loc="center left", bbox_to_anchor=(0.85, 0.5), frameon=False,
                fontsize=9, title_fontsize=9.5, alignment="left")
-    finish(fig, None, f"07_monthly_lines_by_area_{theme}.png",
+    finish(fig, None, "07_monthly_lines_by_area.png",
            "Monthly eCRC metrics by catch area, Marine Areas 5–13, 2026",
-           DATA_NOTE + EST_NOTE + " n = season eCRC interviews.")
+           DATA_NOTE + EST_NOTE + " " + NI + " = season eCRC interviews.")
