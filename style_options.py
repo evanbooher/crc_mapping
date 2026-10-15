@@ -125,7 +125,7 @@ def holes(geom):
     polys = getattr(geom, "geoms", [geom])
     return [Polygon(r) for p in polys for r in p.interiors]
 
-def option_a2():
+def option_a2(inset=None):
     F = "FreeSans"
     ramp = ["#ffffcc", "#c2e699", "#78c679", "#31a354", "#006837"]
     LAND, LAND_EDGE, WATER = "#f2f1ec", "#d9d7cf", "#d6e6f2"
@@ -179,7 +179,32 @@ def option_a2():
                  fontsize=11, fontfamily=F, fontweight="bold", loc="left", pad=8)
     fig.text(0.02, 0.005, "Data: PSSP creel interviews, Apr 1–Oct 7, 2026. Map: WDFW Catch Record Card areas"
              + ("; imagery: Esri World Imagery." if IMAGERY else "."), fontsize=7.5, fontfamily=F, color="#444444")
-    fig.savefig(OUT / ("style_A3_agency_gis_imagery.png" if IMAGERY else "style_A2_agency_gis_latlong.png"), dpi=200, bbox_inches="tight"); plt.close(fig)
+    if inset:
+        add_inset(ax, inset, ramp, (lon0, lon1, lat0, lat1), F)
+    name = "style_A3_agency_gis_imagery" if IMAGERY else "style_A2_agency_gis_latlong"
+    if inset: name += f"_inset_{inset}"
+    fig.savefig(OUT / f"{name}.png", dpi=200, bbox_inches="tight"); plt.close(fig)
+
+def add_inset(ax, mode, ramp, box, F):
+    """Washington locator inset. mode 'study' = Areas 5-13 only; 'all' = every CRC area."""
+    import contextily as cx, xyzservices.providers as xp
+    W = (-124.95, -116.85, 45.50, 49.10)
+    ia = ax.inset_axes([0.025, 0.075, 0.42, 0.25])  # lower left, over the Olympic Peninsula
+    ia.set_xlim(W[0], W[1]); ia.set_ylim(W[2], W[3]); ia.set_aspect(1 / np.cos(np.deg2rad(47.3)))
+    cx.add_basemap(ia, crs="EPSG:4326", source=xp.Esri.WorldGrayCanvas, zoom=7, attribution=False, zorder=0)
+    im = ia.images[-1]; arr = np.asarray(im.get_array()).astype(float)
+    rgb = arr[..., :3] / (255.0 if arr.max() > 1 else 1.0)
+    im.set_data(np.clip((rgb - 0.62) / 0.36, 0, 1))  # stretch contrast so coast and state lines read at inset size
+    all4 = crc.to_crs(4326)
+    if mode == "all":
+        all4.plot(ax=ia, facecolor="#e9e8e3", edgecolor="#8f8d86", linewidth=0.15, zorder=1)
+    ps.to_crs(4326).plot(ax=ia, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(BREAKS, 5),
+                         edgecolor="#333333", linewidth=0.2, zorder=2)
+    ia.add_patch(mpl.patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], fill=False,
+                                       ec="#c0392b", lw=1.2, zorder=3))
+    ia.set_xticks([]); ia.set_yticks([]); ia.set_xlabel(""); ia.set_ylabel("")
+    for sp in ia.spines.values(): sp.set_edgecolor("#333333"); sp.set_linewidth(0.8)
+    ia.text(0.97, 0.06, "Washington", transform=ia.transAxes, ha="right", fontsize=8, fontfamily=F, color="#333333")
 
 IMAGERY, WASH, DESAT = True, 0.62, 0.45
-option_a2()
+option_a2(inset="study"); option_a2(inset="all")
