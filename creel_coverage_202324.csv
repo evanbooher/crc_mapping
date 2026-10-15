@@ -1,0 +1,127 @@
+source_file,table_number,catch_area_code,waterbody,target_species,focal_incidental_species,start_date,end_date,question_type,description_of_area_and_or_time_without_creel_surveys,missing_creel_component_effort_cpue_all_data,reason_for_area_time_not_surveyed,program_id,program_name,FRFM_supported
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,746,"Green/Duwamish River, King County","Chinook, Coho, Pink, Chum",,8/20/2023,12/31/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,746,"Green/Duwamish River, King County",Summer Steelhead,,5/27/2023,9/15/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,746,"Green/Duwamish River, King County",Summer Steelhead,,11/1/2023,12/31/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,762,Lake Washington,Coho,Chinook,9/16/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,763,Lake Sammamish,Coho,,10/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_District12_Aaron Bosworth_R4D12.docx,1,763,Lake Sammamish,Chinook,,10/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D12,"Region 4, District 12",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,534,Columbia River,"Chinook, Sockeye","Steelhead, Sturgeon",6/16/2023,7/15/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,535,Columbia River,"Chinook, Sockeye","Steelhead, Sturgeon",6/16/2023,8/15/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,536,Columbia River,"Chinook, Sockeye","Steelhead, Sturgeon",6/16/2023,8/15/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,534,Columbia River,Chinook,"Coho, Steelhead, Sturgeon",9/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,535,Columbia River,Chinook,"Coho, Steelhead, Sturgeon",9/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,536,Columbia River,Chinook,"Coho, Steelhead, Sturgeon",9/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_Miller_Todd Miller_R3H.docx,1,690,Yakima River,Chinook,"Coho, Steelhead",9/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R3HR,"Region 3, Hanford Reach",FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,1,Ilwaco,"Chinook, Coho, Pink","Chinook, Coho",3/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,2,Westport-Ocean Shores,"Chinook, Coho, Pink","Chinook, Coho",3/15/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,3,La Push,"Chinook, Coho, Pink","Chinook, Coho",3/15/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,4,Neah Bay,"Chinook, Coho, Pink","Chinook, Coho",3/15/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,5,Sekiu,"Chinook, Coho, Pink","Chinook, Coho",3/15/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,21,Willapa Bay,"Chinook, Coho, Pink","Chinook, Coho",5/1/2023,9/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,22,Grays Harbor,"Chinook, Coho, Pink","Chinook, Coho",3/15/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,519,Columbia River: Bouy 10 to Rocky Pt. Tongue Pt.,"Chinook, Coho","Chinook, Coho, Steelhead",3/15/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_OSP_Kyle Vandegraaf_OSP.docx,1,521,Columbia River: Rocky Pt. Tongue Pt. to Warrior Rock,"Chinook, Coho, Pink","Chinook, Coho, Steelhead",3/15/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,OSP,Ocean Sampling Program,FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,640,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,642,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,644,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,646,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,648,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,650,Snake River,Steelhead,Other Salmonids,9/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,592,Grande Ronde River,Steelhead,Other Salmonids,9/1/2023,4/15/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,657,Touchet River,Steelhead,Other Salmonids,9/1/2023,4/15/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,659,Walla Walla River,Steelhead,Other Salmonids,9/1/2023,4/15/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,653,Tucannon River,Steelhead,Other Salmonids,9/1/2023,4/15/2024,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,640,Snake River,Spring Chinook,Other Salmonids,5/3/2023,5/25/2023,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,644,Snake River,Spring Chinook,Other Salmonids,5/2/2023,5/26/2023,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,644,Snake River,Fall Chinook,Other Salmonids,9/7/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,648,Snake River,Fall Chinook,Other Salmonids,8/18/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template JT_Jeremy Trump_R1D3.docx,1,650,Snake River,Fall Chinook,Other Salmonids,8/18/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R1D3,"Region 1, District 3",FALSE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,826,Cascade,Spring Chinook,"Spring Chinook, Steelhead, Bull Trout",6/1/2023,7/16/2023,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,830,Skagit,Spring Chinook,"Spring Chinook, Steelhead, Bull Trout",6/1/2023,7/16/2023,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,830,Skagit,Sockeye,"Chinook, Steelhead, Bull Trout",6/16/2023,7/16/2023,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,830,Skagit,"Pink,  Coho","Coho, Chinook, Steelhead, Bull Trout",8/14/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,830,Skagit,Winter Steelhead,"Steelhead, Bull Trout, Chinook",2/1/2024,4/30/2024,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template Sk_Andrew Fowler_R4D14.docx,1,826,Cascade,"Pink,  Coho","Coho, Chinook, Steelhead, Bull Trout",9/16/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D14,"Region 4, District 14",TRUE
+catch_monitoring_questionnaire_Q6_template__R6_D17S_Evan Booher.docx,1,375,Naselle River,Winter Steelhead,,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D17S,"Region 6, District 17S",TRUE
+catch_monitoring_questionnaire_Q6_template__R6_D17S_Evan Booher.docx,1,424,Willapa River,Winter Steelhead,,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D17S,"Region 6, District 17S",TRUE
+catch_monitoring_questionnaire_Q6_template__R6_D17S_Evan Booher.docx,1,422,"Willapa River, South Fork",Winter Steelhead,,12/1/2023,2/29/2024,6a_creel_surveys,NA,NA,NA,R6D17S,"Region 6, District 17S",TRUE
+catch_monitoring_questionnaire_Q6_template_Bethany Deacy_CRD.docx,1,519,Columbia River Mainstem (B10 – hwy 395 bridge at pasco),"Chinook, Coho, Sockeye, Steelhead","Chum, Pink, Steelhead, Coho, Chinook, Sockeye",1/1/2023,12/31/2024,6a_creel_surveys,NA,NA,NA,CRD,Columbia River Division,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,537,Priest Rapids Dam to Wanapum Dam,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/1/2023,8/31/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,537,Priest Rapids Dam to Wanapum Dam,Fall Chinook,"Summer Steelhead, Spring Chinook",9/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,537,Priest Rapids Dam to Wanapum Dam,Coho,"Summer Steelhead, Spring Chinook",10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,539,Wanapum Dam to Rock Island Dam,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/1/2023,8/31/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,539,Wanapum Dam to Rock Island Dam,Fall Chinook,"Summer Steelhead, Spring Chinook",9/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,539,Wanapum Dam to Rock Island Dam,Coho,"Summer Steelhead, Spring Chinook",10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,541,Rock Island Dam to Rocky Reach Dam,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,541,Rock Island Dam to Rocky Reach Dam,Coho,"Summer Steelhead, Spring Chinook",10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,543,Rocky Reach Dam to Wells Dam,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,543,Rocky Reach Dam to Wells Dam,Coho,"Summer Steelhead, Spring Chinook",10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,545,Wells Dam to Brewster Bridge,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/16/2023,9/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,545,Brewster Bridge to Chief Joseph Dam,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",7/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,670,Lake Wenatchee,Sockeye,"Summer Steelhead, Spring Chinook, Bull Trout",7/26/2023,8/31/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,586,Entiat River,Summer Chinook,"Summer Steelhead, Spring Chinook",7/16/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,552,Chelan River,Summer Chinook,"Summer Steelhead, Spring Chinook",7/16/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,627,Okanogan River,Summer Chinook,Summer Steelhead,7/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,629,Similkameen River,Summer Chinook,Summer Steelhead,7/1/2023,9/15/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,674,Wenatchee River,"Summer Chinook, Sockeye","Summer Steelhead, Spring Chinook",8/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,674,Wenatchee River,Spring Chinook,"Summer Steelhead, Spring Chinook",6/9/2023,6/23/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,672,Icicle River,Spring Chinook,"Summer Steelhead, Spring Chinook",5/16/2023,6/30/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_Chad Jackson_R2.docx,1,672,Icicle River,Coho,"Summer Steelhead, Spring Chinook",10/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R2,Region 2,FALSE
+catch_monitoring_questionnaire_Q6_template_D1_Gabriel Madel_R6D11.docx,1,786,Nisqually River,"Chinook, Coho, Pink Salmon","Chum Salmon, Rainbow Trout, Cutthroat Trout",7/1/2023,11/15/2023,6a_creel_surveys,NA,NA,NA,R6D11,"Region 6, District 11",TRUE
+catch_monitoring_questionnaire_Q6_template_D1_Gabriel Madel_R6D11.docx,1,804,Puyallup River,"Chinook, Coho, Pink Salmon","Chum Salmon, Rainbow Trout, Cutthroat Trout",8/16/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R6D11,"Region 6, District 11",TRUE
+catch_monitoring_questionnaire_Q6_template_D1_Gabriel Madel_R6D11.docx,1,802,Carbon River,"Chinook, Coho, Pink Salmon","Chum Salmon, Rainbow Trout, Cutthroat Trout",9/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R6D11,"Region 6, District 11",TRUE
+catch_monitoring_questionnaire_Q6_template_Kim Figlar-Barnes_R6D17N.docx,1,358,Humptulips River,"Chinook, Chum And Coho",Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D17N,"Region 6, District 17N",TRUE
+catch_monitoring_questionnaire_Q6_template_Kim Figlar-Barnes_R6D17N.docx,1,317,Chehalis River,Coho And Chum,Chinook And Steelhead,9/16/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D17N,"Region 6, District 17N",TRUE
+catch_monitoring_questionnaire_Q6_template_Kim Figlar-Barnes_R6D17N.docx,1,329,Satsop River,Coho And Chum,Chinook And Steelhead,10/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D17N,"Region 6, District 17N",TRUE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,5,Seiku,Chinook,Coho,7/1/2023,8/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,5,Seiku,Coho,Chinook,7/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,5,Seiku,Coho,Chinook,10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,5,Seiku,Chinook,Coho,4/1/2024,4/30/2024,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,6,Pt. Angeles,Chinook,Coho,7/1/2023,8/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,6,Pt. Angeles,Coho,Chinook,7/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,6,Pt. Angeles,Coho,Chinook,10/1/2023,10/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,7,SJI,Chinook,Coho,7/13/2023,7/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,7,SJI,Chinook,Coho,7/21/2023,7/21/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,7,SJI,Chinook,Coho,7/28/2023,7/29/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,7,SJI,Coho,Chinook,8/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,81,Skagit,Coho,Chinook,8/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,82,Stilly/Sno,Coho,Chinook,8/1/2023,9/24/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,9,Admiralty,Chinook,Coho,7/13/2023,7/15/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,9,Admiralty,Chinook,Coho,7/20/2023,7/22/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,9,Admiralty,Chinook,Coho,7/27/2023,7/28/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,9,Admiralty,Coho,Chinook,7/29/2023,9/17/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,9,Admiralty,Coho,Chinook,9/18/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,10,Seattle,Coho,Chinook,6/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,10,Seattle,Chinook,Coho,7/13/2023,8/3/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,10,Seattle,Chinook,Coho,8/11/2023,8/13/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,10,Seattle,Chinook,Coho,8/18/2023,8/20/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,10,Seattle,Chinook,Coho,3/1/2024,4/15/2024,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,11,Tacoma,Chinook,Coho,6/1/2023,6/4/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,11,Tacoma,Chinook,Coho,6/8/2023,6/11/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,11,Tacoma,Chinook,Coho,7/1/2023,7/14/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,11,Tacoma,Coho,Chinook,8/9/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,11,Tacoma,Chinook,Coho,3/1/2024,4/15/2024,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,12,Hood Canal,Chinook,Coho,7/1/2023,9/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,12,Hood Canal,Coho,Chinook,10/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_PSSP_MarkBaltzell_PSSU.docx,1,13,South Sound,Chinook,Coho,5/1/2023,4/30/2024,6a_creel_surveys,NA,NA,NA,PSSU,Puget Sound Sampling Unit,FALSE
+catch_monitoring_questionnaire_Q6_template_R5_Kale Bentley_R5.docx,1,618,Drano Lake,Steelhead,"Coho, Chinook",8/1/2023,10/31/2023,6a_creel_surveys,NA,NA,NA,R5,Region 5,FALSE
+catch_monitoring_questionnaire_Q6_template_R5_Kale Bentley_R5.docx,1,561,Cowlitz R. below Mayfield Dam,"Chinook, Coho, Winter Steelhead",,4/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R5,Region 5,FALSE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,350,Hoh River,Steelhead,Bull Trout/Cutthroat,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,348,Hoh River,Steelhead,Bull Trout/Cutthroat,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,406,Sol Duc,Chinook/Coho,Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,406,Sol Duc,Steelhead,Chinook/Coho,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,402,Dickey,Chinook/Coho,Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,402,Dickey,Steelhead,Chinook/Coho,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,398,Bogachiel,Chinook/Coho,Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,398,Bogachiel,Steelhead,Chinook/Coho,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,400,Calawah,Chinook/Coho,Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,400,Calawah,Steelhead,Chinook/Coho,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,404,Quillayute,Chinook/Coho,Steelhead,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+catch_monitoring_questionnaire_R6_Hannah Bayberry_R6D16.docx,1,404,Quillayute,Steelhead,Chinook/Coho,12/1/2023,3/31/2024,6a_creel_surveys,NA,NA,NA,R6D16,"Region 6, District 16",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,844,Skykomish River,Chinook,Chinook,5/27/2023,5/29/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,844,Skykomish River,Steelhead,Chinook,5/27/2023,8/31/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,850,Snohomish River,"Coho, Pink",Chinook,9/1/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,844,Skykomish River,"Coho, Pink",Chinook,10/23/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,876,Stillaguamish River (mainstem),"Coho, Pink",Chinook,9/16/2023,9/27/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,872,Stillaguamish River (North Fork),Gamefish,Chinook,9/16/2023,9/27/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
+District 13 catch_monitoring_questionnaire_Q6_Alanna Sutton_R4D13.docx,1,860,Wallace River,Coho,Chinook,10/16/2023,11/30/2023,6a_creel_surveys,NA,NA,NA,R4D13,"Region 4, District 13",TRUE
