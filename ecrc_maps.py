@@ -73,7 +73,8 @@ def anchor(code):
 def read_summary():
     raw = pd.read_excel(SUMMARY_XLSX, header=None)
     hdr = raw.index[raw[1].astype(str).eq("Catch area")][0]
-    df = raw.iloc[hdr + 1:, 1:12].copy(); df.columns = raw.iloc[hdr, 1:12].tolist()
+    ncol = int(raw.iloc[hdr].last_valid_index()) + 1
+    df = raw.iloc[hdr + 1:, 1:ncol].copy(); df.columns = raw.iloc[hdr, 1:ncol].tolist()
     df = df[df["Catch area"].notna() & (df["Catch area"].astype(str) != "Total")]
     df["code"] = df["Catch area"].astype(str).replace(CODE_MAP)
     for c in df.columns[1:-1]:
@@ -234,26 +235,44 @@ season_map("01_season_pct_fish_ecrc.png", s["% fish via eCRC"], FISH_BREAKS, YLG
 season_map("02_season_refusal_rate.png", s["% anglers refused"], REF_BREAKS, ORANGES, "Percent of eCRC\nanglers refusing",
            "Percent of eCRC anglers refusing barcode scan, Marine Areas 5–13, 2026", DATA_NOTE + MAP_NOTE)
 
-# 3. sample size, proportional circles
+# 3. sample size: eCRC interviews (outer) with barcode scans nested inside
+OUTER, INNER, EDGE = "#9ecae1", "#08519c", "#08306b"
 fig, ax = plt.subplots(figsize=(7.5, 9))
 basemap(ax)
 ps4.plot(ax=ax, facecolor="white", alpha=0.45, edgecolor="none", zorder=1.5)
 ps4.plot(ax=ax, facecolor="none", edgecolor="#333333", linewidth=0.6, zorder=2)
-n = s["eCRC interviews"]; SMAX = 1400
+n = s["eCRC interviews"]; scans = s["Barcode scans"]; SMAX = 1400
+size = lambda v: SMAX * v / n.max()
+SIDE = {"82": "right", "9": "left", "81": "left"}   # keep crowded central-Sound labels apart
 for c in AREAS:
     x, y = anchor(c)
-    ax.scatter(x, y, s=SMAX * n[c] / n.max(), color="#2c7fb8", edgecolor="#08306b", linewidth=0.8, alpha=0.9, zorder=4)
-    off = np.sqrt(SMAX * n[c] / n.max()) / 2 + 3
-    for txt, dy, wt, fs in [(LABEL.get(c, c), 0, "bold", 9), (f"({NI} = {n[c]:,})", 11, "normal", 8.5)]:
-        ax.annotate(txt, (x, y), xytext=(0, -off - dy), textcoords="offset points", ha="center", va="top",
+    ax.scatter(x, y, s=size(n[c]), color=OUTER, edgecolor=EDGE, linewidth=0.8, alpha=0.95, zorder=4)
+    ax.scatter(x, y, s=size(scans[c]), color=INNER, edgecolor="white", linewidth=0.5, zorder=5)
+    r = np.sqrt(size(n[c])) / 2
+    side = SIDE.get(c, "below")
+    lines = [(LABEL.get(c, c), "bold", 9), (f"({NI} = {n[c]:,})", "normal", 8.5),
+             (f"{int(scans[c]):,} scans", "normal", 8.5)]
+    for k, (txt, wt, fs) in enumerate(lines):
+        if side == "below":
+            xy, ha, va = (0, -(r + 3) - [0, 11, 21.5][k]), "center", "top"
+        else:   # beside the circle, three lines centered vertically on it
+            dx = r + 4 if side == "right" else -(r + 4)
+            xy, ha, va = (dx, 10.5 - 10.5 * k), ("left" if side == "right" else "right"), "center"
+        ax.annotate(txt, (x, y), xytext=xy, textcoords="offset points", ha=ha, va=va,
                     fontsize=fs, fontweight=wt, zorder=7, path_effects=[pe.withStroke(linewidth=2.5, foreground="white")])
 latlong_axes(ax); north_arrow(ax); scale_bar(ax); inset(ax)
-h = [Line2D([], [], marker="o", ls="", color="#2c7fb8", mec="#08306b", markersize=np.sqrt(SMAX * r / n.max()),
-            label=f"{r:,}") for r in [100, 500, 1500]]
-boxed_legend(ax, h, "eCRC interviews", ncol=3, columnspacing=2.2, handletextpad=1.6, borderpad=1.4,
-             handleheight=3.2)
+h = [Line2D([], [], marker="o", ls="", color=OUTER, mec=EDGE, markersize=np.sqrt(size(r)), label=f"{r:,}")
+     for r in [100, 500, 1500]]
+leg1 = boxed_legend(ax, h, "Circle size (count)", ncol=3, columnspacing=2.2, handletextpad=1.6, borderpad=1.4,
+                    handleheight=3.2)
+ax.add_artist(leg1)
+h2 = [Line2D([], [], marker="o", ls="", ms=9, color=OUTER, mec=EDGE, label="eCRC interviews"),
+      Line2D([], [], marker="o", ls="", ms=9, color=INNER, mec="white", label="Barcode scans")]
+fig.canvas.draw()
+bb = leg1.get_window_extent().transformed(ax.transAxes.inverted())
+boxed_legend(ax, h2, None, loc="upper left", bbox_to_anchor=(bb.x0, bb.y0 - 0.008), borderaxespad=0, ncol=2)
 finish(fig, ax, "03_season_ecrc_sample_size.png",
-       "Creel interviews with eCRC harvest by catch area, Marine Areas 5–13, 2026", DATA_NOTE + MAP_NOTE)
+       "eCRC interviews and barcode scans by catch area, Marine Areas 5–13, 2026", DATA_NOTE + MAP_NOTE)
 
 # 4/5. faceted monthly maps
 def facet(metric, breaks, ramp, legend_title, name, title, note):
@@ -343,3 +362,30 @@ for theme in ("bw",):
     finish(fig, None, "07_monthly_lines_by_area.png",
            "Monthly eCRC metrics by catch area, Marine Areas 5–13, 2026",
            DATA_NOTE + EST_NOTE + " " + NI + " = season eCRC interviews.")
+
+
+# 8. barcode scans and refusals per eCRC interview, by area (theme_bw)
+fig, ax = plt.subplots(figsize=(9, 5))
+xa = np.arange(len(AREAS)); w = 0.38
+scan_rate = (s["Barcode scans"] / s["eCRC interviews"]).reindex(AREAS)
+ref_rate = (s["Interviews w/ a refusal"] / s["eCRC interviews"]).reindex(AREAS)
+b1 = ax.bar(xa - w / 2, scan_rate, w, color="#2c7fb8", edgecolor="#333333", lw=0.4, label="Barcode scans")
+b2 = ax.bar(xa + w / 2, ref_rate, w, color=REF_COL, edgecolor="#333333", lw=0.4, label="Interviews with a scan refusal")
+for bars, vals in [(b1, s["Barcode scans"].reindex(AREAS)), (b2, s["Interviews w/ a refusal"].reindex(AREAS))]:
+    for b, v in zip(bars, vals):
+        ax.text(b.get_x() + b.get_width() / 2, b.get_height() + 0.008, f"{int(v):,}", ha="center", va="bottom",
+                fontsize=7.5, color="#4d4d4d")
+ax.axhline(0.6, color="#333333", ls="--", lw=1)
+ax.text(len(AREAS) - 0.5, 0.612, "Barcode question shown in a random 60% of eligible interviews", ha="right", va="bottom", fontsize=8.5)
+ax.set_xticks(xa, [f"{LABEL.get(c, c)}\n({NI} = {int(s.loc[c, 'eCRC interviews']):,})" for c in AREAS])
+ax.yaxis.set_major_formatter(pct); ax.set_ylim(0, 0.7)
+ax.set_xlabel("Catch area"); ax.set_ylabel("Percent of eCRC interviews")
+gg_theme(ax, "bw"); ax.grid(axis="x", which="both", visible=False)
+ax.legend(title="Outcome", loc="center left", bbox_to_anchor=(1.01, 0.5), frameon=False, fontsize=9,
+          title_fontsize=9.5, alignment="left")
+tot_rate = s["Barcode scans"].sum() / s["eCRC interviews"].sum()
+finish(fig, ax, "08_scans_refusals_by_area.png",
+       "Barcode scans and scan refusals per eCRC interview by catch area, Marine Areas 5–13, 2026",
+       DATA_NOTE + f" Eligible interviews: an eCRC angler harvested a salmon or steelhead. Overall: {int(s["Barcode scans"].sum()):,} scans in {int(s['eCRC interviews'].sum()):,} eCRC interviews"
+       f" ({tot_rate:.0%}). Counts above bars. A group can produce more than one scan, so scans per interview"
+       " is an upper bound on interviews with a completed scan. " + NI + " = eCRC interviews.")
