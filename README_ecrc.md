@@ -17,9 +17,16 @@ Input workbooks are not stored in the repo. Pass their paths on the command line
 
 ## Quick start
 
+Get the code (until it is merged, the eCRC work lives on this branch):
+
+    git clone https://github.com/evanbooher/crc_mapping.git
+    cd crc_mapping
+    git checkout ecrc-puget-sound-maps
+
 You need: Python 3.11-3.13 (`py install 3.13` on Windows), Quarto (quarto.org) for the HTML
 report, and the two input workbooks copied into `data/`:
-`data/pssp-2026-summary-v2.xlsx` and `data/pssp-2026-by-month-v4.xlsx` (not stored in git).
+`data/pssp-2026-summary-v2.xlsx` and `data/pssp-2026-by-month-v4.xlsx` (not stored in git; get them from
+the project team).
 
 PowerShell:
 
