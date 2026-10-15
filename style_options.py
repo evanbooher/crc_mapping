@@ -189,7 +189,7 @@ def add_inset(ax, mode, ramp, box, F):
     """Washington locator inset: all CRC areas inside WA, neighbors shaded darker so WA stands out."""
     W = (-125.45, -116.35, 45.3, 49.35)
     ctxb = gpd.read_file(REPO / "data/context_boundaries.geojson")
-    ia = ax.inset_axes([0.02, 0.07, 0.46, 0.27])
+    ia = ax.inset_axes([0.12, 0.075, 0.38, 0.22])
     ia.set_facecolor("#dce8f1")                                            # ocean
     ctxb[ctxb.name != "Washington"].plot(ax=ia, color="#a9a7a0", edgecolor="#f4f3ef", linewidth=0.5, zorder=1)
     wa = ctxb[ctxb.name == "Washington"]
