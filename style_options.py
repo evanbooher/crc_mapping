@@ -116,7 +116,6 @@ def option_c():
     fig.savefig(OUT / "style_C_report_figure.png", dpi=200, bbox_inches="tight"); plt.close(fig)
 
 import matplotlib.patheffects
-option_a(); option_b(); option_c()
 print("ok")
 
 # ---------- Option A2: agency GIS map, lat/long axes, island-filled land ----------
@@ -139,10 +138,21 @@ def option_a2():
     lon0, lon1, lat0, lat1 = e.x.min(), e.x.max(), e.y.min(), e.y.max()
     land = land.cx[lon0 - .2:lon1 + .2, lat0 - .2:lat1 + .2]
     fig, ax = plt.subplots(figsize=(7.5, 9))
-    ax.set_facecolor(WATER)
-    land.plot(ax=ax, color=LAND, edgecolor=LAND, linewidth=0.2)
-    land_main.to_crs(4326).cx[lon0 - .2:lon1 + .2, lat0 - .2:lat1 + .2].boundary.plot(ax=ax, color=LAND_EDGE, linewidth=0.3)
-    p4.plot(ax=ax, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(BREAKS, 5), edgecolor="#333333", linewidth=0.6)
+    ax.set_xlim(lon0, lon1); ax.set_ylim(lat0, lat1); ax.set_aspect(1 / np.cos(np.deg2rad(47.8)))
+    if IMAGERY:
+        import contextily as cx, xyzservices.providers as xp
+        cx.add_basemap(ax, crs="EPSG:4326", source=xp.Esri.WorldImagery, zoom=10, attribution=False, zorder=0)
+        im = ax.images[-1]; arr = np.asarray(im.get_array()).astype(float)
+        rgb = arr[..., :3] / (255.0 if arr.max() > 1 else 1.0)
+        gray = rgb @ np.array([0.299, 0.587, 0.114])
+        rgb = DESAT * gray[..., None] + (1 - DESAT) * rgb   # pull color toward gray so it does not compete with the green fills
+        im.set_data(np.clip(rgb, 0, 1))
+        ax.add_patch(mpl.patches.Rectangle((lon0, lat0), lon1 - lon0, lat1 - lat0, fc="white", alpha=WASH, zorder=0.5, lw=0))
+    else:
+        ax.set_facecolor(WATER)
+        land.plot(ax=ax, color=LAND, edgecolor=LAND, linewidth=0.2)
+        land_main.to_crs(4326).cx[lon0 - .2:lon1 + .2, lat0 - .2:lat1 + .2].boundary.plot(ax=ax, color=LAND_EDGE, linewidth=0.3)
+    p4.plot(ax=ax, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(BREAKS, 5), edgecolor="#333333", linewidth=0.6, zorder=2)
     for c in AREAS:
         pt = p4.loc[p4.code == c].geometry.representative_point().iloc[0]; d = NUDGE.get(c, (0, 0))
         ax.text(pt.x + d[0] / 270000, pt.y + d[1] / 365000, LAB.get(c, c), ha="center", va="center", fontsize=10,
@@ -167,8 +177,9 @@ def option_a2():
     ax.text(xs + mi / 2, ys + 0.03, "20 mi", ha="center", fontsize=9, fontfamily=F, color="#333333")
     ax.set_title("Estimated percent of harvested fish reported by eCRC, Marine Areas 5–13, 2026",
                  fontsize=11, fontfamily=F, fontweight="bold", loc="left", pad=8)
-    fig.text(0.02, 0.005, "Data: PSSP creel interviews, Apr 1–Oct 7, 2026. Map: WDFW Catch Record Card areas.",
-             fontsize=7.5, fontfamily=F, color="#444444")
-    fig.savefig(OUT / "style_A2_agency_gis_latlong.png", dpi=200, bbox_inches="tight"); plt.close(fig)
+    fig.text(0.02, 0.005, "Data: PSSP creel interviews, Apr 1–Oct 7, 2026. Map: WDFW Catch Record Card areas"
+             + ("; imagery: Esri World Imagery." if IMAGERY else "."), fontsize=7.5, fontfamily=F, color="#444444")
+    fig.savefig(OUT / ("style_A3_agency_gis_imagery.png" if IMAGERY else "style_A2_agency_gis_latlong.png"), dpi=200, bbox_inches="tight"); plt.close(fig)
 
+IMAGERY, WASH, DESAT = True, 0.62, 0.45
 option_a2()
