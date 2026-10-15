@@ -1,4 +1,4 @@
-# Python 3.10+ ; versions used to build the October 2026 PSSU figures
+# Python 3.11-3.13 (3.14 may lack Windows wheels for the mapping stack)
 geopandas>=1.0
 pyogrio>=0.9
 shapely>=2.0
@@ -13,3 +13,6 @@ xyzservices>=2024.4
 jupyter>=1.0
 ipykernel>=6.0
 papermill>=2.5      # only needed for quarto render -P parameter overrides
+
+# Windows: trust the agency network's HTTPS certificate when fetching imagery tiles
+pip-system-certs>=4.0; sys_platform == "win32"

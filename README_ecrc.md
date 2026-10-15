@@ -15,21 +15,44 @@ October 2026 Puget Sound Sampling Unit eCRC post-season review.
 
 Input workbooks are not stored in the repo. Pass their paths on the command line.
 
-## Setup
+## Quick start
 
-Conda (recommended on Windows; geopandas installs cleanly from conda-forge):
+You need: Python 3.11-3.13 (`py install 3.13` on Windows), Quarto (quarto.org) for the HTML
+report, and the two input workbooks copied into `data/`:
+`data/pssp-2026-summary-v2.xlsx` and `data/pssp-2026-by-month-v4.xlsx` (not stored in git).
 
-    conda create -n ecrc -c conda-forge python=3.12 geopandas pyogrio matplotlib openpyxl contextily
-    conda activate ecrc
+PowerShell:
 
-Or pip:
+    powershell -ExecutionPolicy Bypass -File setup.ps1
+    .\render.ps1 -P imagery:False      # quick draft
+    .\render.ps1                       # full report -> ecrc_figures.html
 
-    python -m venv .venv
-    .venv\Scripts\activate        # Windows  (macOS/Linux: source .venv/bin/activate)
-    pip install -r requirements.txt
+Git Bash / MSYS2 / macOS / Linux:
 
-The satellite basemap is fetched from `server.arcgisonline.com` (Esri World Imagery) at run time,
-so the machine needs internet access. Set `NO_IMAGERY=1` to skip it (values are unchanged).
+    bash setup.sh
+    bash render.sh -P imagery:False
+    bash render.sh
+
+`setup` creates a `.venv`, installs everything in `requirements.txt` (including Jupyter and the
+Windows certificate fix), checks the imports, and reports missing workbooks or Quarto. `render`
+points Quarto at the `.venv` Python and renders the report. Re-run `setup` after pulling changes
+to `requirements.txt`.
+
+### Known snags (handled by the scripts)
+
+- **Python 3.14:** some mapping packages lack Windows wheels; the scripts pick 3.13/3.12/3.11.
+- **`pip: Permission denied` in MSYS2:** use `python -m pip ...` (the scripts do).
+- **Quarto uses the wrong Python** ("Jupyter: (None)" in `quarto check jupyter`): set
+  `QUARTO_PYTHON` to `.venv\Scripts\python.exe` (the render scripts do).
+- **`SSLError ... self-signed certificate in certificate chain`** when fetching imagery on the
+  agency network: `pip-system-certs` (installed on Windows) makes Python trust the Windows
+  certificate store. Never turn off SSL verification.
+
+## Manual setup
+
+    py -3.13 -m venv .venv
+    .venv\Scripts\activate          # Git Bash/MSYS2: source .venv/Scripts/activate
+    python -m pip install -r requirements.txt
 
 ## Run
 
@@ -62,15 +85,13 @@ slide text has been edited, those rows may fail on wording rather than numbers.
 `ecrc_figures.qmd` runs both scripts and renders one self-contained HTML page: methods, a season
 table by area, all eight figures, and the validation summary.
 
-Extra packages: `conda install -c conda-forge jupyter ipykernel papermill` (papermill is only
-needed for `-P` overrides). Check with `quarto check jupyter`.
+Use `render.ps1` / `render.sh` (see Quick start). By default the report reads the workbooks from
+`data/`; to use other files, pass them through:
 
-    quarto render ecrc_figures.qmd -P summary_xlsx:"C:/data/pssp-2026-summary-v2.xlsx" -P monthly_xlsx:"C:/data/pssp-2026-by-month-v4.xlsx"
+    .\render.ps1 -P summary_xlsx:"C:/path/summary.xlsx" -P monthly_xlsx:"C:/path/by-month.xlsx"
 
-Or edit the parameters cell at the top of the .qmd and run `quarto render ecrc_figures.qmd`.
-Add `-P imagery:False` for a fast draft (no satellite basemap). If Quarto picks up the wrong
-Python (common in MSYS2/Git Bash), point it at the conda one first:
-`export QUARTO_PYTHON="$(conda run -n ecrc python -c 'import sys; print(sys.executable)')"`.
+`-P imagery:False` gives a fast draft without the satellite basemap. `-P deck_pptx:"path.pptx"`
+also checks the numbers quoted in a slide deck.
 
 ## Figures
 
