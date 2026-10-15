@@ -12,7 +12,7 @@ import sys, json, re, csv, math, zipfile
 import openpyxl
 
 SUMMARY, MONTHLY, LOGF, DECK, OUT = sys.argv[1:6]
-L = json.load(open(LOGF))
+L = json.load(open(LOGF, encoding="utf-8"))
 rows = []
 def check(fig, element, key, expected, drawn, ok, note=""):
     rows.append(dict(figure=fig, element=element, key=key, expected=expected, drawn=drawn,
@@ -259,7 +259,7 @@ if DECK not in ("-", "", "none"):   # deck checks are optional; pass "-" to skip
     for s, txt in claims:
         check("deck", "slide text / notes", f"slide {s}", txt, "present" if txt in SL[s] else "missing", txt in SL[s])
 
-with open(OUT, "w", newline="") as f:
+with open(OUT, "w", newline="", encoding="utf-8") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 from collections import Counter
 byfig = {}

@@ -130,7 +130,7 @@ md_table(t, {c: i for c in ["Interviews", "eCRC interviews", "Scans", "eCRC angl
 Every value drawn in the figures was compared against the source workbooks by `validate_figures.py`, which reads the workbooks independently and checks values, color classes read back from the drawn polygons, hatching, labels, line points and bar heights.
 
 ```{python}
-v = pd.read_csv("validation_report.csv")
+v = pd.read_csv("validation_report.csv", encoding="utf-8")
 counts = (v.pivot_table(index="figure", columns="status", values="key", aggfunc="count", fill_value=0)
             .reindex(columns=["PASS", "FAIL", "WARN"], fill_value=0).reset_index())
 counts.columns = ["Figure / source", "Pass", "Fail", "Warn"]

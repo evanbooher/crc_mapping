@@ -427,5 +427,5 @@ finish(fig, ax, "08_scans_refusals_by_area.png",
        " is an upper bound on interviews with a completed scan. " + NI + " = eCRC interviews.")
 
 if os.environ.get("ECRC_LOG"):
-    json.dump(LOG, open(os.environ["ECRC_LOG"], "w"), indent=1, default=float)
+    json.dump(LOG, open(os.environ["ECRC_LOG"], "w", encoding="utf-8"), indent=1, default=float)
     print("log written")
