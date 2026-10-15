@@ -21,7 +21,7 @@ df = df[df["Catch area"].astype(str) != "Total"].dropna(subset=["Catch area"])
 df["code"] = df["Catch area"].astype(str).replace({"8_1": "81", "8_2": "82"})
 ps = ps.merge(df[["code", "% fish via eCRC"]].rename(columns={"% fish via eCRC": "v"}), on="code")
 ps["v"] = ps.v.astype(float)
-x0, y0, x1, y1 = ps.total_bounds; pad = 25000
+x0, y0, x1, y1 = ps.total_bounds; pad = 42000
 EXT = (x0 - pad, x1 + pad, y0 - pad, y1 + pad)
 ctx = crc.cx[EXT[0]:EXT[1], EXT[2]:EXT[3]]; ctx = ctx[~ctx.code.isin(AREAS)]
 NUDGE = {"7": (-60000, 20000), "6": (0, -15000), "13": (-25000, 0), "12": (0, 30000), "81": (-15000, 0)}
