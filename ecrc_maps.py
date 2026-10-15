@@ -14,7 +14,7 @@ Inputs
   CRC.gdb.zip                         WDFW Catch Record Card area polygons (EPSG:2927)
   data/context_boundaries.geojson     WA, neighboring states and BC (us-atlas / world-atlas 10m)
 """
-import sys, textwrap, zipfile, tempfile, pathlib
+import os, json, sys, textwrap, zipfile, tempfile, pathlib
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -35,7 +35,12 @@ DPI = 400                        # high enough to stay sharp when scaled in Powe
 LOW_N = 10                      # eCRC interviews below this are flagged
 F = "FreeSans"                  # Arial/Helvetica-metric sans
 INK = "#111111"
-IMAGERY, WASH, DESAT = True, 0.62, 0.45
+IMAGERY, WASH, DESAT = os.environ.get("NO_IMAGERY") is None, 0.62, 0.45
+
+# validation log: what each figure actually draws (written when ECRC_LOG is set)
+LOG = {}
+def log(key, val):
+    LOG[key] = val
 YLGN = ["#ffffcc", "#c2e699", "#78c679", "#31a354", "#006837"]      # ColorBrewer YlGn 5
 ORANGES = ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]   # ColorBrewer Oranges 5
 FISH_COL, REF_COL = "#238b45", "#d94801"                            # line colors tied to map ramps
@@ -164,23 +169,38 @@ def inset(ax):
     ia.set_xlim(W[0], W[1]); ia.set_ylim(W[2], W[3]); ia.set_aspect(1 / np.cos(np.deg2rad(47.3)))
     no_axes(ia); frame(ia, 0.8)
 
-def area_labels(ax, values=None, fs=10, fmt="{:.0%}"):
+def pct_half_up(v):
+    """Whole-percent label rounded half up (9/40 = 22.5% -> 23%), matching conventional reporting."""
+    from decimal import Decimal, ROUND_HALF_UP
+    return f"{Decimal(str(round(v * 100, 9))).quantize(Decimal('1'), rounding=ROUND_HALF_UP)}%"
+
+def area_labels(ax, values=None, fs=10, fmt=None, key=None):
     for c in AREAS:
         x, y = anchor(c)
         txt = LABEL.get(c, c)
         if values is not None:
             v = values.get(c, np.nan)
-            txt += "\n" + ("–" if pd.isna(v) else fmt.format(v))
+            txt += "\n" + ("–" if pd.isna(v) else (fmt.format(v) if fmt else pct_half_up(v)))
+        if key: LOG.setdefault(key, {})[c] = txt
         ax.text(x, y, txt, ha="center", va="center", fontsize=fs, fontweight="bold", color=INK, linespacing=1.0,
                 zorder=7, path_effects=[pe.withStroke(linewidth=2.5, foreground="white")])
 
-def choropleth(ax, values, n, breaks, ramp):
+def choropleth(ax, values, n, breaks, ramp, key=None):
     d = ps4.copy()
     d["v"] = d.code.map(values); d["n"] = d.code.map(n)
     d.loc[d.n == 0, "v"] = np.nan
     has = d[d.v.notna()]
     has.plot(ax=ax, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(breaks, len(ramp)),
              edgecolor="#333333", linewidth=0.6, zorder=2)
+    if key:   # read back the colors actually drawn (geopandas explodes multipart geometries, colors repeat per part)
+        fc = ax.collections[-1].get_facecolor(); parts = has.geometry.apply(lambda g: len(getattr(g, "geoms", [g])))
+        ramp_rgb = [mpl.colors.to_rgba(c) for c in ramp]; i = 0; drawn = {}
+        for code, k in zip(has.code, parts):
+            col = tuple(np.round(fc[i], 4)); i += k
+            drawn[code] = int(np.argmin([np.abs(np.array(col) - np.array(r)).sum() for r in ramp_rgb]))
+        log(key, {c: {"v": None if pd.isna(v) else float(v), "n": None if pd.isna(nn) else float(nn),
+                      "class": drawn.get(c), "hatched": bool(c in set(has[has.n < LOW_N].code)),
+                      "nodata": bool(pd.isna(v))} for c, v, nn in zip(d.code, d.v, d.n)})
     low = has[has.n < LOW_N]
     if len(low):
         low.plot(ax=ax, facecolor="none", edgecolor="#333333", hatch="////", linewidth=0.6, zorder=3)
@@ -203,6 +223,7 @@ def boxed_legend(ax, handles, title, loc="upper left", **kw):
                      framealpha=1, edgecolor="#333333", fancybox=False, alignment="left", **kw)
 
 def finish(fig, ax_or_none, name, title, note):
+    LOG.setdefault("captions", {})[name] = {"title": title, "note": note}
     if not SLIDE:
         if ax_or_none is not None:
             ax_or_none.set_title(title, fontsize=11, fontweight="bold", loc="left", pad=8)
@@ -222,8 +243,8 @@ s = season
 
 def season_map(name, values, breaks, ramp, legend_title, title, note):
     fig, ax = plt.subplots(figsize=(7.5, 9))
-    basemap(ax); choropleth(ax, values, s["eCRC interviews"], breaks, ramp)
-    area_labels(ax, values)
+    basemap(ax); choropleth(ax, values, s["eCRC interviews"], breaks, ramp, key=name)
+    area_labels(ax, values, key=name + ":labels")
     latlong_axes(ax); north_arrow(ax); scale_bar(ax); inset(ax)
     boxed_legend(ax, class_handles(breaks, ramp), legend_title)
     finish(fig, ax, name, title, note)
@@ -253,6 +274,8 @@ for c in AREAS:
     side = SIDE.get(c, "below")
     lines = [(LABEL.get(c, c), "bold", 9), (f"({NI} = {n[c]:,})", "normal", 8.5),
              (f"{int(scans[c]):,} scans", "normal", 8.5)]
+    LOG.setdefault("03:circles", {})[c] = {"outer_size": float(size(n[c])), "inner_size": float(size(scans[c])),
+                                           "labels": [t for t, _, _ in lines]}
     for k, (txt, wt, fs) in enumerate(lines):
         if side == "below":
             xy, ha, va = (0, -(r + 3) - [0, 11, 21.5][k]), "center", "top"
@@ -281,13 +304,14 @@ def facet(metric, breaks, ramp, legend_title, name, title, note):
     fig.subplots_adjust(left=0.01, right=0.99, top=0.92, bottom=0.04, wspace=0.04, hspace=0.12)
     for ax, m in zip(axes.flat, MONTHS):
         sub = monthly[monthly.month == m].set_index("code")
-        basemap(ax, zoom=10); choropleth(ax, sub[metric], sub["n"], breaks, ramp)
+        basemap(ax, zoom=10); choropleth(ax, sub[metric], sub["n"], breaks, ramp, key=f"{name}:{m}")
         for c in AREAS:
             x, y = anchor(c)
             ax.text(x, y, LABEL.get(c, c), ha="center", va="center", fontsize=6.5, fontweight="bold", zorder=7,
                     path_effects=[pe.withStroke(linewidth=1.8, foreground="white")])
         no_axes(ax)
         ax.set_title(f"{MON[m]} ({NI} = {int(sub['n'].sum()):,})", fontsize=10, loc="left", pad=3)
+        LOG.setdefault(f"{name}:titles", {})[m] = ax.get_title(loc="left")
     lax = axes.flat[-1]; lax.set_axis_off()
     boxed_legend(lax, class_handles(breaks, ramp, low=True, nodata=True), legend_title, loc="center left")
     finish(fig, None, name, title, note + " " + NI + " = eCRC interviews in month. *October partial.")
@@ -331,6 +355,8 @@ for theme in ("bw",):
     for key, lab, col, src in SERIES:
         ax.plot(x, all_months[src].astype(float), color=col, lw=1.2, marker="o", ms=5, label=lab)
     ax.set_xticks(x, [f"{MON[m]}\n({NI} = {int(v):,})" for m, v in zip(all_months["Month"], all_months["eCRC interviews"])])
+    log("06:xticks", [t.get_text() for t in ax.get_xticklabels()])
+    log("06:lines", {lab: [float(v) for v in l.get_ydata()] for l, lab in zip(ax.get_lines(), [x_[0] for x_ in SERIES])})
     ax.yaxis.set_major_formatter(pct); ax.set_ylim(0, 0.4)
     ax.set_xlabel("Month"); ax.set_ylabel("Percent")
     gg_theme(ax, theme)
@@ -350,8 +376,12 @@ for theme in ("bw",):
         for key, lab, col, _ in SERIES:
             ax.plot(xm, sub[key].where(ok), color=col, lw=1.2, marker="o", ms=4)
             ax.plot(xm, sub[key].where(~ok & sub[key].notna()), ls="", marker="o", ms=4, mfc="white", mec=col, mew=1)
+        LOG.setdefault("07:panels", {})[c] = {
+            "solid": {k: [None if not np.isfinite(v) else float(v) for v in ax.get_lines()[2 * j].get_ydata()] for j, (k, *_ ) in enumerate(SERIES)},
+            "hollow": {k: [None if not np.isfinite(v) else float(v) for v in ax.get_lines()[2 * j + 1].get_ydata()] for j, (k, *_ ) in enumerate(SERIES)}}
         gg_theme(ax, theme)
         strip(ax, f"Area {LABEL.get(c, c)} ({NI} = {int(s.loc[c, 'eCRC interviews']):,})", theme)
+        LOG["07:panels"][c]["strip"] = ax.texts[-1].get_text()
     axes.flat[0].yaxis.set_major_formatter(pct); axes.flat[0].set_ylim(-0.02, 0.55)
     for ax in axes[1]:
         ax.set_xticks(xm, [MON[m][0] if m != "2026-10" else "O*" for m in MONTHS])
@@ -385,8 +415,15 @@ gg_theme(ax, "bw"); ax.grid(axis="x", which="both", visible=False)
 ax.legend(title="Outcome", loc="center left", bbox_to_anchor=(1.01, 0.5), frameon=False, fontsize=9,
           title_fontsize=9.5, alignment="left")
 tot_rate = s["Barcode scans"].sum() / s["eCRC interviews"].sum()
+log("08:bars", {c: {"scan_h": float(b1[i].get_height()), "ref_h": float(b2[i].get_height())} for i, c in enumerate(AREAS)})
+log("08:labels", [t.get_text() for t in ax.texts])
+log("08:xticks", [t.get_text() for t in ax.get_xticklabels()])
 finish(fig, ax, "08_scans_refusals_by_area.png",
        "Barcode scans and scan refusals per eCRC interview by catch area, Marine Areas 5–13, 2026",
        DATA_NOTE + f" Eligible interviews: an eCRC angler harvested a salmon or steelhead. Overall: {int(s["Barcode scans"].sum()):,} scans in {int(s['eCRC interviews'].sum()):,} eCRC interviews"
        f" ({tot_rate:.0%}). Counts above bars. A group can produce more than one scan, so scans per interview"
        " is an upper bound on interviews with a completed scan. " + NI + " = eCRC interviews.")
+
+if os.environ.get("ECRC_LOG"):
+    json.dump(LOG, open(os.environ["ECRC_LOG"], "w"), indent=1, default=float)
+    print("log written")
