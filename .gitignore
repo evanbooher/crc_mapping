@@ -2,3 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# eCRC figure outputs and local data
+figures/
+figures_slide/
+*.pdf
+fig_log*.json
+validation_report.csv
+*.xlsx
+__pycache__/

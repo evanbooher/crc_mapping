@@ -1,0 +1,10 @@
+# Python 3.10+ ; versions used to build the October 2026 PSSU figures
+geopandas>=1.0
+pyogrio>=0.9
+shapely>=2.0
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.9
+openpyxl>=3.1
+contextily>=1.6
+xyzservices>=2024.4

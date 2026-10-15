@@ -33,7 +33,9 @@ SLIDE = "--slide" in sys.argv
 NI = r"$\it{n}$"                  # italic n for sample-size labels
 DPI = 400                        # high enough to stay sharp when scaled in PowerPoint
 LOW_N = 10                      # eCRC interviews below this are flagged
-F = "FreeSans"                  # Arial/Helvetica-metric sans
+from matplotlib import font_manager as _fm
+_have = {f.name for f in _fm.fontManager.ttflist}
+F = next((f for f in ["Arial", "Helvetica", "FreeSans", "Liberation Sans"] if f in _have), "DejaVu Sans")  # Arial-metric sans
 INK = "#111111"
 IMAGERY, WASH, DESAT = os.environ.get("NO_IMAGERY") is None, 0.62, 0.45
 
