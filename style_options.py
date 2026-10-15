@@ -118,3 +118,57 @@ def option_c():
 import matplotlib.patheffects
 option_a(); option_b(); option_c()
 print("ok")
+
+# ---------- Option A2: agency GIS map, lat/long axes, island-filled land ----------
+from shapely.geometry import Polygon
+MARINE = ["1", "2", "3", "4", "5", "6", "7", "9", "10", "11", "12", "13", "21", "22", "22W", "81", "82"]
+def holes(geom):
+    polys = getattr(geom, "geoms", [geom])
+    return [Polygon(r) for p in polys for r in p.interiors]
+
+def option_a2():
+    F = "FreeSans"
+    ramp = ["#ffffcc", "#c2e699", "#78c679", "#31a354", "#006837"]
+    LAND, LAND_EDGE, WATER = "#f2f1ec", "#d9d7cf", "#d6e6f2"
+    marine = crc[crc.code.isin(MARINE)]
+    land_main = crc[~crc.code.isin(MARINE)]
+    isl = gpd.GeoDataFrame(geometry=[h for g in marine.geometry for h in holes(g)], crs=crc.crs)
+    land = pd.concat([land_main[["geometry"]], isl]).to_crs(4326)
+    p4 = ps.to_crs(4326)
+    e = gpd.GeoSeries(gpd.points_from_xy([EXT[0], EXT[1]], [EXT[2], EXT[3]]), crs=2927).to_crs(4326)
+    lon0, lon1, lat0, lat1 = e.x.min(), e.x.max(), e.y.min(), e.y.max()
+    land = land.cx[lon0 - .2:lon1 + .2, lat0 - .2:lat1 + .2]
+    fig, ax = plt.subplots(figsize=(7.5, 9))
+    ax.set_facecolor(WATER)
+    land.plot(ax=ax, color=LAND, edgecolor=LAND, linewidth=0.2)
+    land_main.to_crs(4326).cx[lon0 - .2:lon1 + .2, lat0 - .2:lat1 + .2].boundary.plot(ax=ax, color=LAND_EDGE, linewidth=0.3)
+    p4.plot(ax=ax, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(BREAKS, 5), edgecolor="#333333", linewidth=0.6)
+    for c in AREAS:
+        pt = p4.loc[p4.code == c].geometry.representative_point().iloc[0]; d = NUDGE.get(c, (0, 0))
+        ax.text(pt.x + d[0] / 270000, pt.y + d[1] / 365000, LAB.get(c, c), ha="center", va="center", fontsize=10,
+                fontfamily=F, fontweight="bold", color="#111111",
+                path_effects=[mpl.patheffects.withStroke(linewidth=2.5, foreground="white")])
+    ax.set_xlim(lon0, lon1); ax.set_ylim(lat0, lat1); ax.set_aspect(1 / np.cos(np.deg2rad(47.8)))
+    ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda v, _: f"{abs(v):.1f}°W"))
+    ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda v, _: f"{v:.1f}°N"))
+    ax.set_xlabel("Longitude (degree)", fontfamily=F, fontsize=9.5)
+    ax.set_ylabel("Latitude (degree)", fontfamily=F, fontsize=9.5)
+    for t in ax.get_xticklabels() + ax.get_yticklabels(): t.set_fontfamily(F); t.set_fontsize(9)
+    for sp in ax.spines.values(): sp.set_edgecolor("#333333"); sp.set_linewidth(1)
+    leg = ax.legend(handles=[Patch(fc=c, ec="#333333", lw=0.6, label=l) for c, l in zip(ramp, LABELS)],
+                    title="Percent of fish\n(eCRC, estimated)", loc="upper left", fontsize=9, title_fontsize=9.5,
+                    frameon=True, framealpha=1, edgecolor="#333333", fancybox=False, prop={"family": F})
+    leg.get_title().set_fontfamily(F)
+    north_arrow(ax, 0.92, 0.95, 0.07, "#111111", F)
+    mi = 20 * 1609.34 / (111320 * np.cos(np.deg2rad(47.8)))
+    xs, ys = lon0 + 0.05 * (lon1 - lon0), lat0 + 0.04 * (lat1 - lat0)
+    ax.plot([xs, xs + mi], [ys, ys], color="#333333", lw=3, solid_capstyle="butt")
+    ax.plot([xs, xs + mi / 2], [ys, ys], color="white", lw=1.2, solid_capstyle="butt")
+    ax.text(xs + mi / 2, ys + 0.03, "20 mi", ha="center", fontsize=9, fontfamily=F, color="#333333")
+    ax.set_title("Estimated percent of harvested fish reported by eCRC, Marine Areas 5–13, 2026",
+                 fontsize=11, fontfamily=F, fontweight="bold", loc="left", pad=8)
+    fig.text(0.02, 0.005, "Data: PSSP creel interviews, Apr 1–Oct 7, 2026. Map: WDFW Catch Record Card areas.",
+             fontsize=7.5, fontfamily=F, color="#444444")
+    fig.savefig(OUT / "style_A2_agency_gis_latlong.png", dpi=200, bbox_inches="tight"); plt.close(fig)
+
+option_a2()
