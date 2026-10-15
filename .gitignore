@@ -14,3 +14,4 @@ __pycache__/
 ecrc_figures.html
 ecrc_figures_files/
 .quarto/
+.venv/
