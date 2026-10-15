@@ -186,25 +186,30 @@ def option_a2(inset=None):
     fig.savefig(OUT / f"{name}.png", dpi=200, bbox_inches="tight"); plt.close(fig)
 
 def add_inset(ax, mode, ramp, box, F):
-    """Washington locator inset. mode 'study' = Areas 5-13 only; 'all' = every CRC area."""
-    import contextily as cx, xyzservices.providers as xp
-    W = (-124.95, -116.85, 45.50, 49.10)
-    ia = ax.inset_axes([0.025, 0.075, 0.42, 0.25])  # lower left, over the Olympic Peninsula
-    ia.set_xlim(W[0], W[1]); ia.set_ylim(W[2], W[3]); ia.set_aspect(1 / np.cos(np.deg2rad(47.3)))
-    cx.add_basemap(ia, crs="EPSG:4326", source=xp.Esri.WorldGrayCanvas, zoom=7, attribution=False, zorder=0)
-    im = ia.images[-1]; arr = np.asarray(im.get_array()).astype(float)
-    rgb = arr[..., :3] / (255.0 if arr.max() > 1 else 1.0)
-    im.set_data(np.clip((rgb - 0.62) / 0.36, 0, 1))  # stretch contrast so coast and state lines read at inset size
+    """Washington locator inset: all CRC areas inside WA, neighbors shaded darker so WA stands out."""
+    W = (-127.6, -114.4, 44.4, 50.3)
+    ctxb = gpd.read_file(REPO / "data/context_boundaries.geojson")
+    ia = ax.inset_axes([0.02, 0.07, 0.46, 0.27])
+    ia.set_facecolor("#dce8f1")                                            # ocean
+    ctxb[ctxb.name != "Washington"].plot(ax=ia, color="#a9a7a0", edgecolor="#f4f3ef", linewidth=0.5, zorder=1)
+    wa = ctxb[ctxb.name == "Washington"]
+    wa.plot(ax=ia, color="#fbfaf7", edgecolor="none", zorder=1)
     all4 = crc.to_crs(4326)
     if mode == "all":
-        all4.plot(ax=ia, facecolor="#e9e8e3", edgecolor="#8f8d86", linewidth=0.15, zorder=1)
+        all4[~all4.code.isin(["1", "2", "3", "4"])].plot(ax=ia, facecolor="none", edgecolor="#9a988f", linewidth=0.12, zorder=2)
     ps.to_crs(4326).plot(ax=ia, column="v", cmap=ListedColormap(ramp), norm=BoundaryNorm(BREAKS, 5),
-                         edgecolor="#333333", linewidth=0.2, zorder=2)
+                         edgecolor="#333333", linewidth=0.15, zorder=3)
+    wa.boundary.plot(ax=ia, color="#222222", linewidth=0.7, zorder=4)
     ia.add_patch(mpl.patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], fill=False,
-                                       ec="#c0392b", lw=1.2, zorder=3))
+                                       ec="#c0392b", lw=1.2, zorder=5))
+    for name, x, y in [("WASHINGTON", -119.6, 47.35), ("OREGON", -119.6, 44.85), ("IDAHO", -115.9, 45.6),
+                       ("BRITISH\nCOLUMBIA", -119.6, 49.75)]:
+        ia.text(x, y, name, ha="center", va="center", fontsize=6.5 if name != "WASHINGTON" else 7.5,
+                fontfamily=F, fontweight="bold", color="#222222" if name == "WASHINGTON" else "#f7f6f2", zorder=6,
+                path_effects=[mpl.patheffects.withStroke(linewidth=2, foreground="#fbfaf7")] if name == "WASHINGTON" else None)
+    ia.set_xlim(W[0], W[1]); ia.set_ylim(W[2], W[3]); ia.set_aspect(1 / np.cos(np.deg2rad(47.3)))
     ia.set_xticks([]); ia.set_yticks([]); ia.set_xlabel(""); ia.set_ylabel("")
     for sp in ia.spines.values(): sp.set_edgecolor("#333333"); sp.set_linewidth(0.8)
-    ia.text(0.97, 0.06, "Washington", transform=ia.transAxes, ha="right", fontsize=8, fontfamily=F, color="#333333")
 
 IMAGERY, WASH, DESAT = True, 0.62, 0.45
-option_a2(inset="study"); option_a2(inset="all")
+option_a2(inset="all")
