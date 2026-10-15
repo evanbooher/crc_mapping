@@ -8,7 +8,7 @@ Inputs
 
 Outputs (PNG, 300 dpi) written to OUT_DIR.
 """
-import sys, zipfile, tempfile, pathlib
+import os, sys, zipfile, tempfile, pathlib
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -170,6 +170,9 @@ EST_NOTE = "  eCRC fish estimated as total fish × eCRC licenses ÷ (paper + eCR
 NOTE = "Source: PSSP 2026 creel interviews with harvest, Marine Areas 5–13 (data as of Oct 9, 2026)."
 
 def finish(fig, name, title, subtitle, note=NOTE):
+    if os.environ.get("SLIDE"):  # slide version: no title/subtitle, cropped to content
+        fig.savefig(OUT_DIR / name, dpi=300, facecolor=SURFACE, bbox_inches="tight", pad_inches=0.08)
+        plt.close(fig); print("wrote", name); return
     h = fig.get_figheight()
     fig.suptitle(title, x=0.03, y=1 - 0.18 / h, ha="left", va="top", fontsize=15, fontweight="bold")
     fig.text(0.03, 1 - 0.50 / h, subtitle, ha="left", va="top", fontsize=10.5, color=INK2)
