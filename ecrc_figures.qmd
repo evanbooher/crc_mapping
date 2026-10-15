@@ -28,13 +28,27 @@ import os, sys, subprocess
 import pandas as pd
 from IPython.display import Markdown, display
 
+for label, path in [("summary_xlsx", summary_xlsx), ("monthly_xlsx", monthly_xlsx)]:
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{label} not found: {path!r}. Pass the real path, e.g. "
+                                f'quarto render ecrc_figures.qmd -P {label}:"C:/Users/you/Downloads/file.xlsx"')
+
+# Jupyter on Windows can run as pythonw.exe (no console); use python.exe so errors are visible
+py = sys.executable
+if os.path.basename(py).lower() == "pythonw.exe":
+    py = os.path.join(os.path.dirname(py), "python.exe")
+
 env = dict(os.environ, ECRC_LOG="fig_log.json")
 if not imagery:
     env["NO_IMAGERY"] = "1"
-subprocess.run([sys.executable, "ecrc_maps.py", summary_xlsx, monthly_xlsx, out_dir], check=True, env=env,
-               stdout=subprocess.DEVNULL)
-subprocess.run([sys.executable, "validate_figures.py", summary_xlsx, monthly_xlsx, "fig_log.json", deck_pptx,
-                "validation_report.csv"], check=True, stdout=subprocess.DEVNULL)
+
+def run(args):
+    r = subprocess.run([py] + args, env=env, capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError(f"{args[0]} failed (exit {r.returncode}):\n" + "\n".join(r.stderr.strip().splitlines()[-25:]))
+
+run(["ecrc_maps.py", summary_xlsx, monthly_xlsx, out_dir])
+run(["validate_figures.py", summary_xlsx, monthly_xlsx, "fig_log.json", deck_pptx, "validation_report.csv"])
 
 def md_table(df, fmt=None):
     fmt = fmt or {}
