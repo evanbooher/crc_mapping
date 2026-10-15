@@ -8,3 +8,8 @@ matplotlib>=3.9
 openpyxl>=3.1
 contextily>=1.6
 xyzservices>=2024.4
+
+# Quarto report (ecrc_figures.qmd)
+jupyter>=1.0
+ipykernel>=6.0
+papermill>=2.5      # only needed for quarto render -P parameter overrides

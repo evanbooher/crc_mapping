@@ -6,7 +6,7 @@ expected values, and compares them to what ecrc_maps.py logged at draw time (ECR
 values, color class read back from the drawn polygons, hatching / no-data status, labels,
 tick labels, bar heights, line y-values. Also checks numbers quoted in slide text and notes.
 
-Usage: python validate_figures.py <summary.xlsx> <by-month.xlsx> <fig_log.json> <deck.pptx> <out.csv>
+Usage: python validate_figures.py <summary.xlsx> <by-month.xlsx> <fig_log.json> <deck.pptx | -> <out.csv>
 """
 import sys, json, re, csv, math, zipfile
 import openpyxl
@@ -185,78 +185,79 @@ ts, tn = int(TOTAL["Barcode scans"]), int(TOTAL["eCRC interviews"])
 exp = f"{ts:,} scans in {tn:,} eCRC interviews ({pct0(ts / tn)})"
 check(fig, "caption overall", "all areas", exp, "present" if exp in note else "missing", exp in note)
 
-# ---------------- deck text (slides and notes) ----------------
-z = zipfile.ZipFile(DECK)
-order = re.findall(r'r:id="(rId\d+)"', re.search(r"<p:sldIdLst>.*?</p:sldIdLst>", z.read("ppt/presentation.xml").decode()).group(0))
-rels = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="(slides/slide\d+\.xml)"', z.read("ppt/_rels/presentation.xml.rels").decode()))
-def text_of(path):
-    x = z.read(path).decode()
-    return " ".join("".join(re.findall(r"<a:t[^>]*>([^<]*)</a:t>", p)) for p in re.findall(r"<a:p>.*?</a:p>", x, flags=re.S)).replace("&amp;", "&")
-SL = {}
-for i, rid in enumerate(order, 1):
-    sp = "ppt/" + rels[rid]; t = text_of(sp)
-    nrel = "ppt/slides/_rels/" + sp.split("/")[-1] + ".rels"
-    nm = re.search(r'Target="\.\./notesSlides/(notesSlide\d+\.xml)"', z.read(nrel).decode())
-    SL[i] = t + " || NOTES: " + (text_of("ppt/notesSlides/" + nm.group(1)) if nm else "")
+if DECK not in ("-", "", "none"):   # deck checks are optional; pass "-" to skip
+    # ---------------- deck text (slides and notes) ----------------
+    z = zipfile.ZipFile(DECK)
+    order = re.findall(r'r:id="(rId\d+)"', re.search(r"<p:sldIdLst>.*?</p:sldIdLst>", z.read("ppt/presentation.xml").decode()).group(0))
+    rels = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="(slides/slide\d+\.xml)"', z.read("ppt/_rels/presentation.xml.rels").decode()))
+    def text_of(path):
+        x = z.read(path).decode()
+        return " ".join("".join(re.findall(r"<a:t[^>]*>([^<]*)</a:t>", p)) for p in re.findall(r"<a:p>.*?</a:p>", x, flags=re.S)).replace("&amp;", "&")
+    SL = {}
+    for i, rid in enumerate(order, 1):
+        sp = "ppt/" + rels[rid]; t = text_of(sp)
+        nrel = "ppt/slides/_rels/" + sp.split("/")[-1] + ".rels"
+        nm = re.search(r'Target="\.\./notesSlides/(notesSlide\d+\.xml)"', z.read(nrel).decode())
+        SL[i] = t + " || NOTES: " + (text_of("ppt/notesSlides/" + nm.group(1)) if nm else "")
 
-def find_slide(title):
-    return next(i for i, t in SL.items() if t.startswith(title))
-tot = lambda col: float(TOTAL[col])
-claims = []
-s6 = find_slide("Early results")
-claims += [(s6, f"{int(tot('Total interviews')):,} harvest interviews"),
-           (s6, f"{int(OVERALL['Total anglers']):,} anglers and {int(tot('Total fish')):,} fish"),
-           (s6, f"{int(tot('eCRC interviews')):,} interviews ({pct0(tot('eCRC interviews') / tot('Total interviews'))})"),
-           (s6, f"About {pct0(tot('eCRC fish') / tot('Total fish'))} of fish"),
-           (s6, f"{pct0(tot('Refusing anglers') / tot('eCRC anglers'))} of eCRC anglers"),
-           (s6, f"({int(tot('Refusing anglers')):,} of {int(tot('eCRC anglers')):,})"),
-           (s6, f"{int(tot('Barcode scans')):,} barcode scans – {round(100 * tot('Barcode scans') / tot('eCRC interviews'))} per 100"),
-           (s6, f"{pct0(sum(S[c]['eCRC interviews'] for c in ['82', '9', '10']) / tot('eCRC interviews'))} of eCRC interviews – from Areas 8-2, 9 and 10")]
-s7 = find_slide("Where the eCRC sample")
-top3 = sorted(AREAS, key=lambda c: -S[c]["Barcode scans"])[:3]
-pre_july = [c for c in AREAS if any(NG[c][m] > 0 for m in MONTHS[:3])]
-claims += [(s7, f"{int(S['10']['eCRC interviews']):,}, {int(S['82']['eCRC interviews']):,} and {int(S['9']['eCRC interviews']):,} eCRC interviews"),
-           (s7, f"most in Areas {', '.join(lab(c) for c in top3[:2])} and {lab(top3[2])} ({', '.join(str(int(S[c]['Barcode scans'])) for c in top3)})"),
-           (s7, f"only Areas {', '.join(lab(c) for c in pre_july[:-1])} and {lab(pre_july[-1])} had eCRC interviews")]
-lo = [S[c]["eCRC interviews"] for c in ["81", "13"]]
-check("deck", "slide text", f"slide {s7}: Areas 8-1 and 13 fewer than 40", "max < 40", max(lo), max(lo) < 40)
-r567 = [int(S[c]["eCRC interviews"]) for c in ["5", "6", "7"]]
-claims += [(s7, f"Areas 5, 6 and 7 – {min(r567)} to {max(r567)} each")]
-s8 = find_slide("Estimated share")
-claims += [(s8, f"{pct0(tot('eCRC fish') / tot('Total fish'))} overall"),
-           (s8, f"of {int(tot('Total fish')):,} fish"),
-           (s8, f"Area 10 ({pct0(S['10']['% fish via eCRC'])}), 9 ({pct0(S['9']['% fish via eCRC'])})"),
-           (s8, f"8-2 and 7 ({pct0(S['82']['% fish via eCRC'])})"),
-           (s8, f"Strait {pct0(min(S[c]['% fish via eCRC'] for c in ['5','6']))[:-1]}–{pct0(max(S[c]['% fish via eCRC'] for c in ['5','6']))}"),
-           (s8, f"South Sound and Hood Canal {pct0(min(S[c]['% fish via eCRC'] for c in ['11','12','13']))[:-1]}–{pct0(max(S[c]['% fish via eCRC'] for c in ['11','12','13']))}"),
-           (s8, f"8-1 {pct0(S['81']['% fish via eCRC'])}")]
-if pct0(S["82"]["% fish via eCRC"]) != pct0(S["7"]["% fish via eCRC"]):
-    check("deck", "slide text", f"slide {s8}: 8-2 and 7 share one value", pct0(S["82"]["% fish via eCRC"]), pct0(S["7"]["% fish via eCRC"]), False)
-a10 = [num(FG["10"][m]) for m in MONTHS[2:]]
-claims += [(s8, f"Area 10 – {pct0(min(a10))[:-1]}–{pct0(max(a10))} every month from June through October")]
-s9 = find_slide("Barcode scan refusals")
-a6 = [num(RG["6"][m]) for m in MONTHS if num(RG["6"][m]) is not None]
-others = [S[c]["% anglers refused"] for c in ["5", "7", "81", "82", "9", "10", "11"]]
-claims += [(s9, f"{pct0(tot('Refusing anglers') / tot('eCRC anglers'))} overall – {int(tot('Refusing anglers')):,} of {int(tot('eCRC anglers')):,}"),
-           (s9, f"Area 6 – {pct0(S['6']['% anglers refused'])} season to date, between {pct0(min(a6))} and {pct0(max(a6))} every month"),
-           (s9, f"Area 13 – {pct0(S['13']['% anglers refused'])}, but from only {int(S['13']['eCRC anglers'])} eCRC anglers"),
-           (s9, f"Area 12 – lowest at {pct0(S['12']['% anglers refused'])} ({int(S['12']['Refusing anglers'])} of {int(S['12']['eCRC anglers'])})"),
-           (s9, f"Most other areas – {pct0(min(others))[:-1]} to {pct0(max(others))}")]
-s10 = find_slide("Barcode scans by catch area")
-sr = {c: S[c]["Barcode scans"] / S[c]["eCRC interviews"] for c in AREAS}
-hi = sorted(AREAS, key=lambda c: -sr[c])[:2]; low2 = sorted(AREAS, key=lambda c: sr[c])[:2]
-claims += [(s10, f"Overall {int(tot('Barcode scans')):,} scans in {int(tot('eCRC interviews')):,} eCRC interviews, about {round(100 * tot('Barcode scans') / tot('eCRC interviews'))} per 100"),
-           (s10, f"Highest in Areas {lab(hi[0])} ({round(100 * sr[hi[0]])}) and {lab(hi[1])} ({round(100 * sr[hi[1]])})"),
-           (s10, f"lowest in Area {lab(low2[0])} ({round(100 * sr[low2[0]])}) and {lab(low2[1])} ({round(100 * sr[low2[1]])})"),
-           (s10, f"Area 6 has more interviews with a refusal ({int(S['6']['Interviews w/ a refusal'])}) than scans ({int(S['6']['Barcode scans'])})")]
-s11 = find_slide("Season trend")
-mrec = {r["Month"]: r for r in AM}
-fj = [mrec[m]["% fish via eCRC (est.)"] for m in ["2026-07", "2026-08", "2026-09"]]
-claims += [(s11, f"Refusals: {pct0(mrec['2026-04']['% anglers refused'])} in April, {pct0(mrec['2026-09']['% anglers refused'])} in September, back up to {pct0(mrec['2026-10']['% anglers refused'])} in early October (partial month, {int(mrec['2026-10']['eCRC anglers'])} eCRC anglers)"),
-           (s11, f"eCRC fish share: {pct0(min(fj))[:-1]}-{pct0(max(fj))} July through September"),
-           (s11, f"May has {int(mrec['2026-05']['eCRC interviews'])} eCRC interviews")]
-for s, txt in claims:
-    check("deck", "slide text / notes", f"slide {s}", txt, "present" if txt in SL[s] else "missing", txt in SL[s])
+    def find_slide(title):
+        return next(i for i, t in SL.items() if t.startswith(title))
+    tot = lambda col: float(TOTAL[col])
+    claims = []
+    s6 = find_slide("Early results")
+    claims += [(s6, f"{int(tot('Total interviews')):,} harvest interviews"),
+               (s6, f"{int(OVERALL['Total anglers']):,} anglers and {int(tot('Total fish')):,} fish"),
+               (s6, f"{int(tot('eCRC interviews')):,} interviews ({pct0(tot('eCRC interviews') / tot('Total interviews'))})"),
+               (s6, f"About {pct0(tot('eCRC fish') / tot('Total fish'))} of fish"),
+               (s6, f"{pct0(tot('Refusing anglers') / tot('eCRC anglers'))} of eCRC anglers"),
+               (s6, f"({int(tot('Refusing anglers')):,} of {int(tot('eCRC anglers')):,})"),
+               (s6, f"{int(tot('Barcode scans')):,} barcode scans – {round(100 * tot('Barcode scans') / tot('eCRC interviews'))} per 100"),
+               (s6, f"{pct0(sum(S[c]['eCRC interviews'] for c in ['82', '9', '10']) / tot('eCRC interviews'))} of eCRC interviews – from Areas 8-2, 9 and 10")]
+    s7 = find_slide("Where the eCRC sample")
+    top3 = sorted(AREAS, key=lambda c: -S[c]["Barcode scans"])[:3]
+    pre_july = [c for c in AREAS if any(NG[c][m] > 0 for m in MONTHS[:3])]
+    claims += [(s7, f"{int(S['10']['eCRC interviews']):,}, {int(S['82']['eCRC interviews']):,} and {int(S['9']['eCRC interviews']):,} eCRC interviews"),
+               (s7, f"most in Areas {', '.join(lab(c) for c in top3[:2])} and {lab(top3[2])} ({', '.join(str(int(S[c]['Barcode scans'])) for c in top3)})"),
+               (s7, f"only Areas {', '.join(lab(c) for c in pre_july[:-1])} and {lab(pre_july[-1])} had eCRC interviews")]
+    lo = [S[c]["eCRC interviews"] for c in ["81", "13"]]
+    check("deck", "slide text", f"slide {s7}: Areas 8-1 and 13 fewer than 40", "max < 40", max(lo), max(lo) < 40)
+    r567 = [int(S[c]["eCRC interviews"]) for c in ["5", "6", "7"]]
+    claims += [(s7, f"Areas 5, 6 and 7 – {min(r567)} to {max(r567)} each")]
+    s8 = find_slide("Estimated share")
+    claims += [(s8, f"{pct0(tot('eCRC fish') / tot('Total fish'))} overall"),
+               (s8, f"of {int(tot('Total fish')):,} fish"),
+               (s8, f"Area 10 ({pct0(S['10']['% fish via eCRC'])}), 9 ({pct0(S['9']['% fish via eCRC'])})"),
+               (s8, f"8-2 and 7 ({pct0(S['82']['% fish via eCRC'])})"),
+               (s8, f"Strait {pct0(min(S[c]['% fish via eCRC'] for c in ['5','6']))[:-1]}–{pct0(max(S[c]['% fish via eCRC'] for c in ['5','6']))}"),
+               (s8, f"South Sound and Hood Canal {pct0(min(S[c]['% fish via eCRC'] for c in ['11','12','13']))[:-1]}–{pct0(max(S[c]['% fish via eCRC'] for c in ['11','12','13']))}"),
+               (s8, f"8-1 {pct0(S['81']['% fish via eCRC'])}")]
+    if pct0(S["82"]["% fish via eCRC"]) != pct0(S["7"]["% fish via eCRC"]):
+        check("deck", "slide text", f"slide {s8}: 8-2 and 7 share one value", pct0(S["82"]["% fish via eCRC"]), pct0(S["7"]["% fish via eCRC"]), False)
+    a10 = [num(FG["10"][m]) for m in MONTHS[2:]]
+    claims += [(s8, f"Area 10 – {pct0(min(a10))[:-1]}–{pct0(max(a10))} every month from June through October")]
+    s9 = find_slide("Barcode scan refusals")
+    a6 = [num(RG["6"][m]) for m in MONTHS if num(RG["6"][m]) is not None]
+    others = [S[c]["% anglers refused"] for c in ["5", "7", "81", "82", "9", "10", "11"]]
+    claims += [(s9, f"{pct0(tot('Refusing anglers') / tot('eCRC anglers'))} overall – {int(tot('Refusing anglers')):,} of {int(tot('eCRC anglers')):,}"),
+               (s9, f"Area 6 – {pct0(S['6']['% anglers refused'])} season to date, between {pct0(min(a6))} and {pct0(max(a6))} every month"),
+               (s9, f"Area 13 – {pct0(S['13']['% anglers refused'])}, but from only {int(S['13']['eCRC anglers'])} eCRC anglers"),
+               (s9, f"Area 12 – lowest at {pct0(S['12']['% anglers refused'])} ({int(S['12']['Refusing anglers'])} of {int(S['12']['eCRC anglers'])})"),
+               (s9, f"Most other areas – {pct0(min(others))[:-1]} to {pct0(max(others))}")]
+    s10 = find_slide("Barcode scans by catch area")
+    sr = {c: S[c]["Barcode scans"] / S[c]["eCRC interviews"] for c in AREAS}
+    hi = sorted(AREAS, key=lambda c: -sr[c])[:2]; low2 = sorted(AREAS, key=lambda c: sr[c])[:2]
+    claims += [(s10, f"Overall {int(tot('Barcode scans')):,} scans in {int(tot('eCRC interviews')):,} eCRC interviews, about {round(100 * tot('Barcode scans') / tot('eCRC interviews'))} per 100"),
+               (s10, f"Highest in Areas {lab(hi[0])} ({round(100 * sr[hi[0]])}) and {lab(hi[1])} ({round(100 * sr[hi[1]])})"),
+               (s10, f"lowest in Area {lab(low2[0])} ({round(100 * sr[low2[0]])}) and {lab(low2[1])} ({round(100 * sr[low2[1]])})"),
+               (s10, f"Area 6 has more interviews with a refusal ({int(S['6']['Interviews w/ a refusal'])}) than scans ({int(S['6']['Barcode scans'])})")]
+    s11 = find_slide("Season trend")
+    mrec = {r["Month"]: r for r in AM}
+    fj = [mrec[m]["% fish via eCRC (est.)"] for m in ["2026-07", "2026-08", "2026-09"]]
+    claims += [(s11, f"Refusals: {pct0(mrec['2026-04']['% anglers refused'])} in April, {pct0(mrec['2026-09']['% anglers refused'])} in September, back up to {pct0(mrec['2026-10']['% anglers refused'])} in early October (partial month, {int(mrec['2026-10']['eCRC anglers'])} eCRC anglers)"),
+               (s11, f"eCRC fish share: {pct0(min(fj))[:-1]}-{pct0(max(fj))} July through September"),
+               (s11, f"May has {int(mrec['2026-05']['eCRC interviews'])} eCRC interviews")]
+    for s, txt in claims:
+        check("deck", "slide text / notes", f"slide {s}", txt, "present" if txt in SL[s] else "missing", txt in SL[s])
 
 with open(OUT, "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)

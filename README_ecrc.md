@@ -57,6 +57,21 @@ macOS/Linux: `NO_IMAGERY=1 ECRC_LOG=fig_log.json python ecrc_maps.py ...`
 The deck-text checks in `validate_figures.py` match the slide wording at the time of writing; if
 slide text has been edited, those rows may fail on wording rather than numbers.
 
+## Quarto report
+
+`ecrc_figures.qmd` runs both scripts and renders one self-contained HTML page: methods, a season
+table by area, all eight figures, and the validation summary.
+
+Extra packages: `conda install -c conda-forge jupyter ipykernel papermill` (papermill is only
+needed for `-P` overrides). Check with `quarto check jupyter`.
+
+    quarto render ecrc_figures.qmd -P summary_xlsx:"C:/data/pssp-2026-summary-v2.xlsx" -P monthly_xlsx:"C:/data/pssp-2026-by-month-v4.xlsx"
+
+Or edit the parameters cell at the top of the .qmd and run `quarto render ecrc_figures.qmd`.
+Add `-P imagery:False` for a fast draft (no satellite basemap). If Quarto picks up the wrong
+Python (common in MSYS2/Git Bash), point it at the conda one first:
+`export QUARTO_PYTHON="$(conda run -n ecrc python -c 'import sys; print(sys.executable)')"`.
+
 ## Figures
 
 | # | File | Content |

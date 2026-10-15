@@ -1,0 +1,133 @@
+---
+title: "eCRC sampling metrics, Puget Sound marine areas, 2026"
+subtitle: "PSSP creel interviews, Marine Areas 5–13"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    fig-align: left
+execute:
+  echo: false
+  warning: false
+jupyter: python3
+---
+
+```{python}
+#| tags: [parameters]
+# Override at render time, e.g.
+# quarto render ecrc_figures.qmd -P summary_xlsx:"C:/data/pssp-2026-summary-v2.xlsx" -P monthly_xlsx:"C:/data/pssp-2026-by-month-v4.xlsx"
+summary_xlsx = "data/pssp-2026-summary-v2.xlsx"
+monthly_xlsx = "data/pssp-2026-by-month-v4.xlsx"
+imagery = True        # False skips the satellite basemap (faster; values unchanged)
+deck_pptx = "-"       # path to the deck to also check slide numbers, or "-" to skip
+out_dir = "figures"
+```
+
+```{python}
+import os, sys, subprocess
+import pandas as pd
+from IPython.display import Markdown, display
+
+env = dict(os.environ, ECRC_LOG="fig_log.json")
+if not imagery:
+    env["NO_IMAGERY"] = "1"
+subprocess.run([sys.executable, "ecrc_maps.py", summary_xlsx, monthly_xlsx, out_dir], check=True, env=env,
+               stdout=subprocess.DEVNULL)
+subprocess.run([sys.executable, "validate_figures.py", summary_xlsx, monthly_xlsx, "fig_log.json", deck_pptx,
+                "validation_report.csv"], check=True, stdout=subprocess.DEVNULL)
+
+def md_table(df, fmt=None):
+    fmt = fmt or {}
+    cols = list(df.columns)
+    out = ["| " + " | ".join(cols) + " |", "|" + "|".join("---" for _ in cols) + "|"]
+    for _, r in df.iterrows():
+        out.append("| " + " | ".join(fmt.get(c, str)(r[c]) for c in cols) + " |")
+    return Markdown("\n".join(out))
+
+# season table by catch area, straight from the summary workbook
+raw = pd.read_excel(summary_xlsx, header=None)
+h = raw.index[raw[1].astype(str).eq("Catch area")][0]
+ncol = int(raw.iloc[h].last_valid_index()) + 1
+S = raw.iloc[h + 1:, 1:ncol].copy(); S.columns = raw.iloc[h, 1:ncol].tolist()
+S = S[S["Catch area"].notna()]
+S["Catch area"] = S["Catch area"].astype(str).str.replace("_", "-")
+S = S.set_index("Catch area")
+tot = S.loc["Total"]
+```
+
+## Data and methods
+
+Harvest interviews (groups with at least one salmon or steelhead) from Puget Sound Sampling Program creel surveys in Marine Areas 5–13, April 1 to October 7, 2026 (October partial).
+
+- **eCRC share of fish (estimated):** total fish × eCRC licenses ÷ (paper + eCRC licenses), within each area.
+- **Scan refusal rate:** refusing anglers ÷ eCRC anglers.
+- **Barcode scans:** successful scans. The iForm barcode question appears in a random 60% of eligible interviews (at least one eCRC angler with harvest).
+- Cells with fewer than 10 eCRC interviews are hatched on maps and shown as hollow, unconnected points on plots.
+
+```{python}
+display(Markdown(
+    f"Season totals: **{int(tot['Total interviews']):,}** harvest interviews, "
+    f"**{int(tot['eCRC interviews']):,}** with an eCRC angler "
+    f"({tot['eCRC interviews'] / tot['Total interviews']:.0%}), "
+    f"**{int(tot['Barcode scans']):,}** barcode scans, and "
+    f"**{int(tot['Refusing anglers']):,}** of **{int(tot['eCRC anglers']):,}** eCRC anglers refusing a scan "
+    f"({tot['Refusing anglers'] / tot['eCRC anglers']:.0%})."))
+```
+
+```{python}
+#| label: tbl-season
+#| tbl-cap: "Season to date by catch area."
+t = S.drop(index="Total").reset_index()
+t = t[["Catch area", "Total interviews", "eCRC interviews", "Barcode scans", "eCRC anglers",
+       "Refusing anglers", "% anglers refused", "Total fish", "% fish via eCRC"]]
+t.columns = ["Area", "Interviews", "eCRC interviews", "Scans", "eCRC anglers", "Refusing",
+             "% refusing", "Fish", "% fish via eCRC (est.)"]
+i = lambda v: f"{int(v):,}"; p = lambda v: f"{float(v):.1%}"
+md_table(t, {c: i for c in ["Interviews", "eCRC interviews", "Scans", "eCRC anglers", "Refusing", "Fish"]}
+            | {"% refusing": p, "% fish via eCRC (est.)": p})
+```
+
+## Season maps
+
+![Estimated percent of harvested fish from eCRC anglers by catch area.](figures/01_season_pct_fish_ecrc.png){#fig-fish width="70%"}
+
+![Percent of eCRC anglers refusing the barcode scan by catch area.](figures/02_season_refusal_rate.png){#fig-refusal width="70%"}
+
+![eCRC interviews (outer circle) and successful barcode scans (inner circle) by catch area, same size scale.](figures/03_season_ecrc_sample_size.png){#fig-sample width="70%"}
+
+## Monthly maps
+
+![Estimated percent of harvested fish from eCRC anglers by month. October partial (through October 7).](figures/04_monthly_map_pct_fish_ecrc.png){#fig-fish-month}
+
+![Percent of eCRC anglers refusing the barcode scan by month. October partial (through October 7).](figures/05_monthly_map_refusal.png){#fig-refusal-month}
+
+## Monthly trends
+
+![Monthly eCRC fish share and refusal rate, all areas combined.](figures/06_monthly_lines_all_areas.png){#fig-trend}
+
+![Monthly eCRC fish share and refusal rate by catch area.](figures/07_monthly_lines_by_area.png){#fig-trend-area}
+
+## Barcode scans
+
+![Barcode scans and interviews with a scan refusal per eCRC interview by catch area. Dashed line: 60% question rate. A group can produce more than one scan, so scans per interview is an upper bound on interviews with a completed scan.](figures/08_scans_refusals_by_area.png){#fig-scans}
+
+## Data checks
+
+Every value drawn in the figures was compared against the source workbooks by `validate_figures.py`, which reads the workbooks independently and checks values, color classes read back from the drawn polygons, hatching, labels, line points and bar heights.
+
+```{python}
+v = pd.read_csv("validation_report.csv")
+counts = (v.pivot_table(index="figure", columns="status", values="key", aggfunc="count", fill_value=0)
+            .reindex(columns=["PASS", "FAIL", "WARN"], fill_value=0).reset_index())
+counts.columns = ["Figure / source", "Pass", "Fail", "Warn"]
+md_table(counts)
+```
+
+```{python}
+issues = v[v.status != "PASS"][["status", "figure", "element", "key", "expected", "drawn", "note"]].fillna("")
+if len(issues):
+    display(Markdown("Checks that did not pass:"))
+    display(md_table(issues.rename(columns=str.capitalize)))
+else:
+    display(Markdown("All checks passed."))
+```

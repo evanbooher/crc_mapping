@@ -11,3 +11,6 @@ fig_log*.json
 validation_report.csv
 *.xlsx
 __pycache__/
+ecrc_figures.html
+ecrc_figures_files/
+.quarto/
