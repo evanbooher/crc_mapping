@@ -31,6 +31,7 @@ OUT_DIR = pathlib.Path(sys.argv[3]); OUT_DIR.mkdir(parents=True, exist_ok=True)
 SLIDE = "--slide" in sys.argv
 
 NI = r"$\it{n}$"                  # italic n for sample-size labels
+DPI = 400                        # high enough to stay sharp when scaled in PowerPoint
 LOW_N = 10                      # eCRC interviews below this are flagged
 F = "FreeSans"                  # Arial/Helvetica-metric sans
 INK = "#111111"
@@ -110,7 +111,7 @@ MONTHS = sorted(monthly.month.unique())
 MON = {m: pd.Timestamp(m + "-01").strftime("%b") for m in MONTHS}; MON["2026-10"] = "Oct*"
 
 # ---------------- map pieces ----------------
-def basemap(ax, zoom=10):
+def basemap(ax, zoom=11):
     ax.set_xlim(EXT[0], EXT[1]); ax.set_ylim(EXT[2], EXT[3]); ax.set_aspect(ASPECT)
     if IMAGERY:
         import contextily as cx, xyzservices.providers as xp
@@ -212,7 +213,7 @@ def finish(fig, ax_or_none, name, title, note):
         x = bb.x0 / fig.get_figwidth(); y = bb.y0 / fig.get_figheight() - 0.012
         width_chars = int((bb.x1 - bb.x0) * 17)                      # ~17 chars per inch at 7.5 pt
         fig.text(x, y, textwrap.fill(note, width_chars), fontsize=7.5, color="#444444", va="top", ha="left")
-    fig.savefig(OUT_DIR / name, dpi=250, bbox_inches="tight", pad_inches=0.08, facecolor="white")
+    fig.savefig(OUT_DIR / name, dpi=DPI, bbox_inches="tight", pad_inches=0.08, facecolor="white")
     plt.close(fig); print("wrote", name)
 
 FISH_BREAKS = [0, .15, .20, .25, .30, 1]
@@ -280,7 +281,7 @@ def facet(metric, breaks, ramp, legend_title, name, title, note):
     fig.subplots_adjust(left=0.01, right=0.99, top=0.92, bottom=0.04, wspace=0.04, hspace=0.12)
     for ax, m in zip(axes.flat, MONTHS):
         sub = monthly[monthly.month == m].set_index("code")
-        basemap(ax, zoom=9); choropleth(ax, sub[metric], sub["n"], breaks, ramp)
+        basemap(ax, zoom=10); choropleth(ax, sub[metric], sub["n"], breaks, ramp)
         for c in AREAS:
             x, y = anchor(c)
             ax.text(x, y, LABEL.get(c, c), ha="center", va="center", fontsize=6.5, fontweight="bold", zorder=7,
@@ -309,7 +310,7 @@ def gg_theme(ax, theme):
         for k, sp in ax.spines.items():
             sp.set_visible(k in ("left", "bottom")); sp.set_color("black"); sp.set_linewidth(0.8)
     ax.set_axisbelow(True)
-    ax.tick_params(colors="#4d4d4d", labelcolor="#4d4d4d", length=3, width=0.6, which="major")
+    ax.tick_params(colors="black", labelcolor="black", length=3, width=0.6, which="major")
     ax.tick_params(which="minor", length=0)
 
 def strip(ax, text, theme):
@@ -374,7 +375,7 @@ b2 = ax.bar(xa + w / 2, ref_rate, w, color=REF_COL, edgecolor="#333333", lw=0.4,
 for bars, vals in [(b1, s["Barcode scans"].reindex(AREAS)), (b2, s["Interviews w/ a refusal"].reindex(AREAS))]:
     for b, v in zip(bars, vals):
         ax.text(b.get_x() + b.get_width() / 2, b.get_height() + 0.008, f"{int(v):,}", ha="center", va="bottom",
-                fontsize=7.5, color="#4d4d4d")
+                fontsize=7.5, color="black")
 ax.axhline(0.6, color="#333333", ls="--", lw=1)
 ax.text(len(AREAS) - 0.5, 0.612, "Barcode question shown in a random 60% of eligible interviews", ha="right", va="bottom", fontsize=8.5)
 ax.set_xticks(xa, [f"{LABEL.get(c, c)}\n({NI} = {int(s.loc[c, 'eCRC interviews']):,})" for c in AREAS])
