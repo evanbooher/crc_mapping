@@ -187,7 +187,7 @@ def option_a2(inset=None):
 
 def add_inset(ax, mode, ramp, box, F):
     """Washington locator inset: all CRC areas inside WA, neighbors shaded darker so WA stands out."""
-    W = (-127.6, -114.4, 44.4, 50.3)
+    W = (-125.45, -116.35, 45.3, 49.35)
     ctxb = gpd.read_file(REPO / "data/context_boundaries.geojson")
     ia = ax.inset_axes([0.02, 0.07, 0.46, 0.27])
     ia.set_facecolor("#dce8f1")                                            # ocean
@@ -202,11 +202,6 @@ def add_inset(ax, mode, ramp, box, F):
     wa.boundary.plot(ax=ia, color="#222222", linewidth=0.7, zorder=4)
     ia.add_patch(mpl.patches.Rectangle((box[0], box[2]), box[1] - box[0], box[3] - box[2], fill=False,
                                        ec="#c0392b", lw=1.2, zorder=5))
-    for name, x, y in [("WASHINGTON", -119.6, 47.35), ("OREGON", -119.6, 44.85), ("IDAHO", -115.9, 45.6),
-                       ("BRITISH\nCOLUMBIA", -119.6, 49.75)]:
-        ia.text(x, y, name, ha="center", va="center", fontsize=6.5 if name != "WASHINGTON" else 7.5,
-                fontfamily=F, fontweight="bold", color="#222222" if name == "WASHINGTON" else "#f7f6f2", zorder=6,
-                path_effects=[mpl.patheffects.withStroke(linewidth=2, foreground="#fbfaf7")] if name == "WASHINGTON" else None)
     ia.set_xlim(W[0], W[1]); ia.set_ylim(W[2], W[3]); ia.set_aspect(1 / np.cos(np.deg2rad(47.3)))
     ia.set_xticks([]); ia.set_yticks([]); ia.set_xlabel(""); ia.set_ylabel("")
     for sp in ia.spines.values(): sp.set_edgecolor("#333333"); sp.set_linewidth(0.8)
